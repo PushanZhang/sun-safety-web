@@ -1,0 +1,8 @@
+{
+  "name": "sun-safety-web",
+  "private": true,
+  "scripts": {
+    "dev:frontend": "pnpm --dir frontend dev",
+    "dev:backend": "pnpm --dir backend dev"
+  }
+}
