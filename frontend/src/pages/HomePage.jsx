@@ -68,6 +68,7 @@ function HomePage() {
           setAlert({
             title: 'High UV conditions',
             message: 'UV is high today. Wear SPF50+, hat and sunglasses.',
+            severity: 'high',
           })
         }
       } finally {
