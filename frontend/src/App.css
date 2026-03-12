@@ -1,42 +1,386 @@
 #root {
-  max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  max-width: 1080px;
+  padding: max(1rem, calc(env(safe-area-inset-top) + 0.9rem)) 1.25rem 1.25rem;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.app-shell {
+  display: grid;
+  gap: 1rem;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.app-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.5rem;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.app-kicker {
+  color: #2557a7;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.app-title {
+  color: #12253f;
+  font-size: 1.35rem;
+  margin: 0.1rem 0 0;
+}
+
+.top-nav {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.top-nav button {
+  background: #e9eff9;
+  border: 1px solid #c8d4ea;
+  border-radius: 999px;
+  color: #153566;
+  cursor: pointer;
+  font-size: 0.92rem;
+  font-weight: 600;
+  padding: 0.45rem 0.95rem;
+}
+
+.top-nav button.active {
+  background: #173a75;
+  border-color: #173a75;
+  color: #ffffff;
+}
+
+.page {
+  display: grid;
+  gap: 1rem;
+}
+
+.page-header {
+  align-items: end;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.page-header h2 {
+  color: #12253f;
+  font-size: 1.35rem;
+  margin: 0;
+}
+
+.meta-time {
+  background: transparent;
+  border: none;
+  color: #68778f;
+  font-size: 0.78rem;
+  font-weight: 500;
+  margin: 0;
+  padding: 0;
+}
+
+.muted {
+  color: #5b6778;
+  margin: 0.2rem 0 0;
+}
+
+.secondary-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.38rem;
+}
+
+.dot-sep {
+  color: #90a0b8;
+  font-size: 0.8rem;
+}
+
+.error {
+  background: #fff8ed;
+  border: 1px solid #edd9b5;
+  border-radius: 10px;
+  color: #6c4a1b;
+  margin: 0;
+  padding: 0.6rem 0.75rem;
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.home-grid {
+  grid-template-columns: 1.25fr 1fr;
 }
 
 .card {
-  padding: 2em;
+  background: #ffffff;
+  border: 1px solid #dde5f1;
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(15, 30, 60, 0.06);
+  padding: 1rem;
 }
 
-.read-the-docs {
-  color: #888;
+.card-head h3 {
+  color: #163058;
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.section-head h3 {
+  color: #163058;
+  font-size: 1.02rem;
+  margin: 0;
+}
+
+.section-kicker {
+  color: #2557a7;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  margin: 0 0 0.25rem;
+  text-transform: uppercase;
+}
+
+.uv-card {
+  padding-bottom: 0.78rem;
+}
+
+.uv-row {
+  align-items: center;
+  display: flex;
+  gap: 0.68rem;
+  margin-top: 0.58rem;
+}
+
+.uv-value {
+  color: #0f2447;
+  font-size: 2.3rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.uv-level {
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.32rem 0.7rem;
+}
+
+.risk-rail {
+  display: grid;
+  gap: 0.3rem;
+  grid-template-columns: repeat(5, 1fr);
+  margin-top: 0.48rem;
+}
+
+.risk-segment {
+  background: #edf1f6;
+  border-radius: 999px;
+  height: 0.36rem;
+  transition: background-color 150ms ease;
+}
+
+.risk-segment.active {
+  background: var(--risk-color);
+}
+
+.risk-scale {
+  color: #607089;
+  display: grid;
+  font-size: 0.73rem;
+  gap: 0.3rem;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin-top: 0.32rem;
+}
+
+.risk-scale span {
+  text-align: center;
+}
+
+.risk-scale span.active {
+  color: #1d3559;
+  font-weight: 700;
+}
+
+.alert-text {
+  color: #223a61;
+  font-weight: 600;
+  margin: 0.56rem 0 0;
+}
+
+.weather-grid {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 0.9rem;
+}
+
+.stat-tile {
+  background: #f7f9fc;
+  border: 1px solid #e2e9f5;
+  border-radius: 10px;
+  padding: 0.65rem 0.75rem;
+}
+
+.tile-label {
+  color: #5d6d84;
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+.tile-value {
+  color: #122e56;
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0.2rem 0 0;
+}
+
+.alert-banner {
+  border-left: 5px solid #c88b00;
+  padding-top: 0.9rem;
+}
+
+.alert-banner.severity-high {
+  background: #fff7ec;
+  border-left-color: #d36800;
+}
+
+.alert-banner.severity-medium {
+  background: #fffdf3;
+  border-left-color: #bb9300;
+}
+
+.alert-banner.severity-low {
+  background: #f5fbf6;
+  border-left-color: #2b8a4b;
+}
+
+.alert-kicker {
+  color: #6b4b00;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.alert-title {
+  color: #1a2a43;
+  font-size: 1.06rem;
+  font-weight: 700;
+  margin: 0.25rem 0;
+}
+
+.alert-body {
+  margin: 0;
+}
+
+.compact-list {
+  margin: 0.5rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.compact-list li + li {
+  margin-top: 0.45rem;
+}
+
+.next-steps h3 {
+  color: #163058;
+  font-size: 1.04rem;
+  margin: 0;
+}
+
+.awareness-page {
+  gap: 0.8rem;
+}
+
+.awareness-highlight {
+  background: #f5f9ff;
+  border-color: #cddffc;
+}
+
+.awareness-columns {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: 1fr 1fr;
+}
+
+.awareness-subsection {
+  min-height: 100%;
+}
+
+.awareness-note .muted {
+  color: #44546e;
+}
+
+.myth-grid {
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 0.62rem;
+}
+
+.myth-item {
+  background: #ffffff;
+  border: 1px solid #dce8fb;
+  border-radius: 10px;
+  padding: 0.68rem;
+}
+
+.myth-item p {
+  margin: 0;
+}
+
+.myth-item p + p {
+  margin-top: 0.32rem;
+}
+
+.myth-label,
+.fact-label {
+  color: #1d4f9c;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.placeholder {
+  color: #6b7689;
+  margin: 0.55rem 0 0;
+}
+
+@media (max-width: 900px) {
+  .home-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .awareness-columns,
+  .myth-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .risk-scale {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 640px) {
+  #root {
+    padding: max(0.8rem, calc(env(safe-area-inset-top) + 0.7rem)) 0.8rem 0.8rem;
+  }
+
+  .app-header,
+  .page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .secondary-row {
+    margin-top: -0.05rem;
+  }
 }
