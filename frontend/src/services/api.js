@@ -19,3 +19,7 @@ export function fetchCurrentWeather({ latitude, longitude }) {
 export function fetchCurrentAlerts({ uvIndex }) {
   return request(`/api/alerts/current?uv=${uvIndex}`)
 }
+
+export function fetchClothingRecommendations({ uvIndex, temperature }) {
+  return request(`/api/clothing/current?uv=${uvIndex}&temp=${temperature}`)
+}

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import AlertBanner from '../components/AlertBanner'
 import UVCard from '../components/UVCard'
 import WeatherCard from '../components/WeatherCard'
-import { fetchCurrentAlerts, fetchCurrentUV, fetchCurrentWeather } from '../services/api'
+import { fetchClothingRecommendations, fetchCurrentAlerts, fetchCurrentUV, fetchCurrentWeather } from '../services/api'
 
 const FALLBACK_LOCATION = {
   locationName: 'Melbourne',
@@ -17,6 +17,7 @@ function HomePage() {
   const [alert, setAlert] = useState(null)
   const [loadingUV, setLoadingUV] = useState(true)
   const [loadingWeather, setLoadingWeather] = useState(true)
+  const [clothingRecs, setClothingRecs] = useState([])
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -60,6 +61,13 @@ function HomePage() {
         const alertRes = await fetchCurrentAlerts({ uvIndex: uvRes.uvIndex })
         if (!active) return
         setAlert(alertRes)
+
+        const clothingRes = await fetchClothingRecommendations({ 
+          uvIndex: uvRes.uvIndex, 
+          temperature: weatherRes.temperatureC ?? 20 
+        })
+        if (!active) return
+        setClothingRecs(clothingRes.recommendations || [])
       } catch {
         if (active) {
           setError('Live data is temporarily unavailable. Showing baseline values.')
@@ -70,6 +78,11 @@ function HomePage() {
             message: 'UV is high today. Wear SPF50+, hat and sunglasses.',
             severity: 'high',
           })
+          setClothingRecs([
+            { recommendation_text: 'Use SPF30+ or above before going outdoors.' },
+            { recommendation_text: 'Wear a hat and sunglasses for midday exposure.' },
+            { recommendation_text: 'Plan shade breaks when UV is high or very high.' }
+          ])
         }
       } finally {
         if (active) {
@@ -116,11 +129,15 @@ function HomePage() {
 
       <section className="card next-steps">
         <h3>Quick protection checklist</h3>
-        <ul className="compact-list">
-          <li>Use SPF30+ or above before going outdoors.</li>
-          <li>Wear a hat and sunglasses for midday exposure.</li>
-          <li>Plan shade breaks when UV is high or very high.</li>
-        </ul>
+        {clothingRecs.length > 0 ? (
+          <ul className="compact-list">
+            {clothingRecs.map((rec, index) => (
+              <li key={index}>{rec.recommendation_text}</li>
+            ))}
+          </ul>
+        ) : (
+          <p className="muted">Loading recommendations...</p>
+        )}
       </section>
     </main>
   )
