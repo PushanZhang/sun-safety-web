@@ -1,4 +1,4 @@
-import { getUVLevelInfo, getUVMessage } from '../utils/uv'
+import { getBurnTimeMinutes, getUVLevelInfo, getUVMessage } from '../utils/uv'
 
 function getRiskIndex(uv) {
   if (uv <= 2) return 0
@@ -59,6 +59,11 @@ function UVCard({ locationName, uvIndex, loading }) {
           </div>
 
           <p className="alert-text">{getUVMessage(safeUV)}</p>
+          {getBurnTimeMinutes(safeUV) !== null && (
+            <p className="burn-alert" style={{ borderLeftColor: color }}>
+              ⚠ Unprotected skin may begin to burn in ~{getBurnTimeMinutes(safeUV)} min — apply SPF50+ now
+            </p>
+          )}
         </>
       )}
     </section>

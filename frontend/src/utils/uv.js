@@ -15,3 +15,14 @@ export function getUVMessage(uvIndex) {
     return 'Very high UV. Skin can burn within about 15-25 minutes without protection.'
   return 'Extreme UV. Minimize direct sun exposure and use full sun protection.'
 }
+
+/**
+ * Returns approximate minutes before unprotected fair skin (Type II) begins to burn.
+ * Returns null for UV < 3 (no significant burn risk).
+ */
+export function getBurnTimeMinutes(uvIndex) {
+  if (!Number.isFinite(uvIndex) || uvIndex < 3) return null
+  const raw = Math.round(200 / uvIndex)
+  const rounded = Math.round(raw / 5) * 5
+  return Math.max(10, Math.min(60, rounded))
+}

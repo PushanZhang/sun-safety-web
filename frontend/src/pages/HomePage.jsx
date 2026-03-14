@@ -118,6 +118,10 @@ function HomePage() {
         </div>
       </header>
 
+      <section className="page-hero page-hero-home">
+        <img src="/images/home-hero.svg" alt="Sun and city visual for live UV tracking" loading="lazy" />
+      </section>
+
       {error ? <p className="error">{error}</p> : null}
 
       <AlertBanner alert={alert} />

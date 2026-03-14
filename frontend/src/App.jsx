@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import AwarenessPage from './pages/AwarenessPage'
 import HomePage from './pages/HomePage'
+import PreventionPage from './pages/PreventionPage'
 
 function App() {
   const [activeTab, setActiveTab] = useState('home')
@@ -32,10 +33,19 @@ function App() {
           >
             Awareness
           </button>
+          <button
+            className={activeTab === 'prevention' ? 'active' : ''}
+            onClick={() => setActiveTab('prevention')}
+            type="button"
+          >
+            Prevention
+          </button>
         </nav>
       </header>
 
-      {activeTab === 'home' ? <HomePage /> : <AwarenessPage />}
+      {activeTab === 'home' ? <HomePage /> : null}
+      {activeTab === 'awareness' ? <AwarenessPage /> : null}
+      {activeTab === 'prevention' ? <PreventionPage /> : null}
     </div>
   )
 }

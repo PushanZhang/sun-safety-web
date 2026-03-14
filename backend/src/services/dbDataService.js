@@ -12,15 +12,20 @@ function uvCategory(uvIndex) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Find the closest location in the DB to the given lat/lon          */
+/*  Find the closest location, preferring ones that have UV data      */
 /* ------------------------------------------------------------------ */
 async function findClosestLocation(lat, lon) {
   const { rows } = await pool.query(
-    `SELECT location_id, location_name, latitude, longitude,
-            ( ABS(latitude  - $1) + ABS(longitude - $2) ) AS distance
-       FROM location
-      WHERE latitude IS NOT NULL AND longitude IS NOT NULL
-      ORDER BY distance ASC
+    `SELECT l.location_id, l.location_name, l.latitude, l.longitude,
+            ( ABS(l.latitude  - $1) + ABS(l.longitude - $2) ) AS distance,
+            EXISTS (
+              SELECT 1
+                FROM uv_historical_record u
+               WHERE u.location_id = l.location_id
+            ) AS has_uv_data
+       FROM location l
+      WHERE l.latitude IS NOT NULL AND l.longitude IS NOT NULL
+      ORDER BY has_uv_data DESC, distance ASC
       LIMIT 1`,
     [Number(lat) || -37.8136, Number(lon) || 144.9631],
   )
@@ -262,4 +267,20 @@ export async function getClothingRecommendations({ uvIndex, temperatureC }) {
   }
 
   return { category, recommendations: rows, source: 'database' }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Awareness: monthly average UV from historical records             */
+/* ------------------------------------------------------------------ */
+export async function getMonthlyUVAverages() {
+  const { rows } = await pool.query(
+    `SELECT EXTRACT(MONTH FROM observation_datetime)::int AS month,
+            ROUND(AVG(uv_index)::numeric, 2) AS avg_uv,
+            ROUND(MAX(uv_index)::numeric, 2) AS peak_uv
+       FROM uv_historical_record
+      WHERE uv_index > 0
+      GROUP BY month
+      ORDER BY month ASC`,
+  )
+  return rows
 }

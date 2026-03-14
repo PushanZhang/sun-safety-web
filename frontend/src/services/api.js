@@ -23,3 +23,7 @@ export function fetchCurrentAlerts({ uvIndex }) {
 export function fetchClothingRecommendations({ uvIndex, temperature }) {
   return request(`/api/clothing/current?uv=${uvIndex}&temp=${temperature}`)
 }
+
+export function fetchUVMonthly() {
+  return request('/api/awareness/uv-monthly')
+}
