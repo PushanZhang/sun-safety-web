@@ -16,10 +16,11 @@ const RISK_SEGMENTS = [
   { label: 'Extreme', color: '#6a1b9a' },
 ]
 
-function UVCard({ locationName, uvIndex, loading }) {
+function UVCard({ locationName, uvIndex, loading, source, observedAt }) {
   const safeUV = Number.isFinite(uvIndex) ? uvIndex : 0
   const { level, color } = getUVLevelInfo(safeUV)
   const activeRiskIndex = getRiskIndex(safeUV)
+  const observedLabel = observedAt ? new Date(observedAt).toLocaleString() : null
 
   return (
     <section className="card uv-card" aria-live="polite">
@@ -59,6 +60,10 @@ function UVCard({ locationName, uvIndex, loading }) {
           </div>
 
           <p className="alert-text">{getUVMessage(safeUV)}</p>
+          <p className="muted">
+            Source: {source || 'unknown'}
+            {observedLabel ? ` | Observed: ${observedLabel}` : ''}
+          </p>
           {getBurnTimeMinutes(safeUV) !== null && (
             <p className="burn-alert" style={{ borderLeftColor: color }}>
               ⚠ Unprotected skin may begin to burn in ~{getBurnTimeMinutes(safeUV)} min — apply SPF50+ now

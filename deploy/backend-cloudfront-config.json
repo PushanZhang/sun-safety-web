@@ -1,0 +1,48 @@
+{
+  "CallerReference": "sun-safety-backend-20260316-1",
+  "Comment": "HTTPS frontend access for Sun Safety backend",
+  "Enabled": true,
+  "PriceClass": "PriceClass_100",
+  "Origins": {
+    "Quantity": 1,
+    "Items": [
+      {
+        "Id": "sun-safety-backend-origin",
+        "DomainName": "sun-safety-backend-prod.eba-3cyzu7pj.ap-southeast-2.elasticbeanstalk.com",
+        "CustomOriginConfig": {
+          "HTTPPort": 80,
+          "HTTPSPort": 443,
+          "OriginProtocolPolicy": "http-only",
+          "OriginSslProtocols": {
+            "Quantity": 1,
+            "Items": ["TLSv1.2"]
+          }
+        }
+      }
+    ]
+  },
+  "DefaultCacheBehavior": {
+    "TargetOriginId": "sun-safety-backend-origin",
+    "ViewerProtocolPolicy": "redirect-to-https",
+    "AllowedMethods": {
+      "Quantity": 3,
+      "Items": ["GET", "HEAD", "OPTIONS"],
+      "CachedMethods": {
+        "Quantity": 2,
+        "Items": ["GET", "HEAD"]
+      }
+    },
+    "ForwardedValues": {
+      "QueryString": true,
+      "Cookies": {
+        "Forward": "none"
+      }
+    },
+    "MinTTL": 0,
+    "DefaultTTL": 0,
+    "MaxTTL": 0
+  },
+  "ViewerCertificate": {
+    "CloudFrontDefaultCertificate": true
+  }
+}

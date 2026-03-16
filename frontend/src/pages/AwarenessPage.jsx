@@ -37,55 +37,57 @@ function BarChart({ data, xKey, yKey, color, yTickFormat }) {
   const yTicks = [0, Math.round(max * 0.5), Math.round(max)]
 
   return (
-    <svg
-      viewBox={`0 0 ${totalW} ${H + MT + MB}`}
-      style={{ width: '100%' }}
-      role="img"
-      aria-label="bar chart"
-    >
-      <line x1={ML} y1={MT} x2={ML} y2={H + MT} stroke="#dde5f1" strokeWidth={1} />
-      <line x1={ML} y1={H + MT} x2={totalW} y2={H + MT} stroke="#dde5f1" strokeWidth={1} />
-      {yTicks.map((v) => {
-        const y = H + MT - (v / max) * H
-        const label = yTickFormat ? yTickFormat(v) : String(v)
-        return (
-          <g key={v}>
-            <line x1={ML - 3} y1={y} x2={ML} y2={y} stroke="#dde5f1" strokeWidth={1} />
-            <text x={ML - 5} y={y + 3} textAnchor="end" fontSize={8} fill="#607089">
-              {label}
-            </text>
-          </g>
-        )
-      })}
-      {data.map((d, i) => {
-        const val = parseFloat(d[yKey])
-        const barH = (val / max) * H
-        const x = ML + i * (BAR_W + GAP)
-        const fill = typeof color === 'function' ? color(val) : color
-        return (
-          <g key={i}>
-            <rect
-              x={x}
-              y={H + MT - barH}
-              width={BAR_W}
-              height={barH}
-              fill={fill}
-              rx={3}
-              opacity={0.88}
-            />
-            <text
-              x={x + BAR_W / 2}
-              y={H + MT + 15}
-              textAnchor="middle"
-              fontSize={9}
-              fill="#607089"
-            >
-              {d[xKey]}
-            </text>
-          </g>
-        )
-      })}
-    </svg>
+    <div className="chart-scroll" role="presentation">
+      <svg
+        viewBox={`0 0 ${totalW} ${H + MT + MB}`}
+        style={{ width: '100%', minWidth: `${totalW}px`, height: 'auto', display: 'block' }}
+        role="img"
+        aria-label="bar chart"
+      >
+        <line x1={ML} y1={MT} x2={ML} y2={H + MT} stroke="#dde5f1" strokeWidth={1} />
+        <line x1={ML} y1={H + MT} x2={totalW} y2={H + MT} stroke="#dde5f1" strokeWidth={1} />
+        {yTicks.map((v) => {
+          const y = H + MT - (v / max) * H
+          const label = yTickFormat ? yTickFormat(v) : String(v)
+          return (
+            <g key={v}>
+              <line x1={ML - 3} y1={y} x2={ML} y2={y} stroke="#dde5f1" strokeWidth={1} />
+              <text x={ML - 5} y={y + 3} textAnchor="end" fontSize={8} fill="#607089">
+                {label}
+              </text>
+            </g>
+          )
+        })}
+        {data.map((d, i) => {
+          const val = parseFloat(d[yKey])
+          const barH = (val / max) * H
+          const x = ML + i * (BAR_W + GAP)
+          const fill = typeof color === 'function' ? color(val) : color
+          return (
+            <g key={i}>
+              <rect
+                x={x}
+                y={H + MT - barH}
+                width={BAR_W}
+                height={barH}
+                fill={fill}
+                rx={3}
+                opacity={0.88}
+              />
+              <text
+                x={x + BAR_W / 2}
+                y={H + MT + 15}
+                textAnchor="middle"
+                fontSize={9}
+                fill="#607089"
+              >
+                {d[xKey]}
+              </text>
+            </g>
+          )
+        })}
+      </svg>
+    </div>
   )
 }
 
@@ -122,8 +124,12 @@ const checklist = [
 
 function AwarenessPage() {
   const [uvMonthly, setUVMonthly] = useState([])
+  const [uvMonthlyLoading, setUvMonthlyLoading] = useState(true)
+  const [uvMonthlyError, setUvMonthlyError] = useState('')
 
   useEffect(() => {
+    setUvMonthlyLoading(true)
+    setUvMonthlyError('')
     fetchUVMonthly()
       .then((rows) => {
         const mapped = rows.map((r) => ({
@@ -132,7 +138,13 @@ function AwarenessPage() {
         }))
         setUVMonthly(mapped)
       })
-      .catch(() => {})
+      .catch(() => {
+        setUvMonthly([])
+        setUvMonthlyError('Monthly UV data is temporarily unavailable.')
+      })
+      .finally(() => {
+        setUvMonthlyLoading(false)
+      })
   }, [])
 
   return (
@@ -154,13 +166,15 @@ function AwarenessPage() {
             <h3>Melanoma in Australia</h3>
           </div>
           <p className="chart-caption">Annual new cases (Cancer Council Australia / AIHW)</p>
-          <BarChart
-            data={MELANOMA_DATA}
-            xKey="year"
-            yKey="cases"
-            color="#c62828"
-            yTickFormat={(v) => (v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v))}
-          />
+          <div className="chart-area">
+            <BarChart
+              data={MELANOMA_DATA}
+              xKey="year"
+              yKey="cases"
+              color="#c62828"
+              yTickFormat={(v) => (v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v))}
+            />
+          </div>
           <p className="chart-note muted">
             New melanoma diagnoses have risen by ~48% from 2010 to 2022, making it Australia&apos;s
             third most common cancer.
@@ -173,13 +187,22 @@ function AwarenessPage() {
             <h3>Monthly UV Trend — Melbourne</h3>
           </div>
           <p className="chart-caption">Average daytime UV index by month (historical records)</p>
-          <BarChart
-            data={uvMonthly}
-            xKey="month"
-            yKey="avg_uv"
-            color={uvBarColor}
-            yTickFormat={(v) => String(v)}
-          />
+          <div className="chart-area">
+            {uvMonthlyLoading ? <p className="muted chart-placeholder">Loading data...</p> : null}
+            {!uvMonthlyLoading && uvMonthly.length === 0 ? (
+              <p className="muted chart-placeholder">No monthly UV data available yet.</p>
+            ) : null}
+            {!uvMonthlyLoading && uvMonthly.length > 0 ? (
+              <BarChart
+                data={uvMonthly}
+                xKey="month"
+                yKey="avg_uv"
+                color={uvBarColor}
+                yTickFormat={(v) => String(v)}
+              />
+            ) : null}
+          </div>
+          {uvMonthlyError ? <p className="error">{uvMonthlyError}</p> : null}
           <p className="chart-note muted">
             UV peaks in summer (Jan–Feb) and drops sharply in winter. Protection is needed
             year-round during spring and summer months.

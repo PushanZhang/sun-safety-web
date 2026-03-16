@@ -1,0 +1,14 @@
+# Dependencies (installed on EB server via npm install)
+node_modules/
+
+# Local environment variables (set via EB console instead)
+.env
+.env.local
+
+# Dev logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db

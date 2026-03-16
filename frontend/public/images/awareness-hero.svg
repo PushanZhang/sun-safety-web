@@ -1,40 +1,65 @@
-<svg width="1200" height="420" viewBox="0 0 1200 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="UV awareness charts illustration">
+<svg width="1200" height="420" viewBox="0 0 1200 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="UV and skin cancer positive correlation illustration">
   <defs>
-    <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0" stop-color="#eefcf1"/>
-      <stop offset="1" stop-color="#ddf0ff"/>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#e6f5ff"/>
+      <stop offset="1" stop-color="#ecfbf2"/>
     </linearGradient>
+    <linearGradient id="titleGlow" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#0f4d85"/>
+      <stop offset="1" stop-color="#0f7f8a"/>
+    </linearGradient>
+    <linearGradient id="barFill" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#ffb43d"/>
+      <stop offset="1" stop-color="#f18a00"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#0d4b78" flood-opacity="0.12"/>
+    </filter>
   </defs>
-  <rect width="1200" height="420" rx="24" fill="url(#g1)"/>
-  <rect x="70" y="72" width="500" height="276" rx="20" fill="#ffffff" stroke="#cce0f5" stroke-width="3"/>
-  <rect x="630" y="72" width="500" height="276" rx="20" fill="#ffffff" stroke="#cce0f5" stroke-width="3"/>
 
-  <g transform="translate(102 112)">
-    <line x1="0" y1="170" x2="420" y2="170" stroke="#dce6f4" stroke-width="2"/>
-    <line x1="0" y1="20" x2="0" y2="170" stroke="#dce6f4" stroke-width="2"/>
-    <rect x="26" y="114" width="30" height="56" rx="4" fill="#f19000"/>
-    <rect x="86" y="92" width="30" height="78" rx="4" fill="#f19000"/>
-    <rect x="146" y="74" width="30" height="96" rx="4" fill="#f19000"/>
-    <rect x="206" y="58" width="30" height="112" rx="4" fill="#f19000"/>
-    <rect x="266" y="38" width="30" height="132" rx="4" fill="#f19000"/>
-    <rect x="326" y="24" width="30" height="146" rx="4" fill="#f19000"/>
-    <rect x="386" y="14" width="30" height="156" rx="4" fill="#f19000"/>
+  <rect width="1200" height="420" rx="24" fill="url(#bg)"/>
+  <rect x="36" y="18" width="1128" height="66" rx="16" fill="#ffffff" fill-opacity="0.56"/>
+
+  <text x="70" y="61" font-size="46" font-family="Sora, Manrope, Segoe UI, sans-serif" fill="url(#titleGlow)" font-weight="800" letter-spacing="0.3">Awareness Through Visual Dataset</text>
+
+  <rect x="46" y="98" width="530" height="282" rx="24" fill="#ffffff" stroke="#bad4ee" stroke-width="3" filter="url(#softShadow)"/>
+  <rect x="624" y="98" width="530" height="282" rx="24" fill="#ffffff" stroke="#bad4ee" stroke-width="3" filter="url(#softShadow)"/>
+
+  <g transform="translate(92 132)">
+    <text x="0" y="0" font-size="22" font-family="Manrope, Segoe UI, sans-serif" fill="#1b4f7f" font-weight="800">UV Exposure Level</text>
+    <text x="0" y="24" font-size="15" font-family="Manrope, Segoe UI, sans-serif" fill="#4e6f92" font-weight="600">Higher UV index increases daily skin damage pressure</text>
+    <line x1="0" y1="228" x2="438" y2="228" stroke="#d9e8f7" stroke-width="2"/>
+    <line x1="0" y1="56" x2="0" y2="228" stroke="#d9e8f7" stroke-width="2"/>
+    <line x1="0" y1="176" x2="438" y2="176" stroke="#edf4fb" stroke-width="1.5"/>
+    <line x1="0" y1="124" x2="438" y2="124" stroke="#edf4fb" stroke-width="1.5"/>
+    <rect x="16" y="190" width="44" height="38" rx="7" fill="url(#barFill)"/>
+    <rect x="78" y="170" width="44" height="58" rx="7" fill="url(#barFill)"/>
+    <rect x="140" y="148" width="44" height="80" rx="7" fill="url(#barFill)"/>
+    <rect x="202" y="120" width="44" height="108" rx="7" fill="url(#barFill)"/>
+    <rect x="264" y="90" width="44" height="138" rx="7" fill="url(#barFill)"/>
+    <rect x="326" y="64" width="44" height="164" rx="7" fill="url(#barFill)"/>
+    <rect x="388" y="40" width="44" height="188" rx="7" fill="url(#barFill)"/>
+    <text x="8" y="258" font-size="13" font-family="Manrope, Segoe UI, sans-serif" fill="#517396" font-weight="700">Low UV</text>
+    <text x="368" y="258" font-size="13" font-family="Manrope, Segoe UI, sans-serif" fill="#517396" font-weight="700" text-anchor="end">High UV</text>
   </g>
 
-  <g transform="translate(662 112)">
-    <line x1="0" y1="170" x2="420" y2="170" stroke="#dce6f4" stroke-width="2"/>
-    <line x1="0" y1="20" x2="0" y2="170" stroke="#dce6f4" stroke-width="2"/>
-    <polyline points="0,140 60,120 120,126 180,95 240,70 300,64 360,52 420,40" fill="none" stroke="#1667c4" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="0" cy="140" r="6" fill="#1667c4"/>
-    <circle cx="60" cy="120" r="6" fill="#1667c4"/>
-    <circle cx="120" cy="126" r="6" fill="#1667c4"/>
-    <circle cx="180" cy="95" r="6" fill="#1667c4"/>
-    <circle cx="240" cy="70" r="6" fill="#1667c4"/>
-    <circle cx="300" cy="64" r="6" fill="#1667c4"/>
-    <circle cx="360" cy="52" r="6" fill="#1667c4"/>
-    <circle cx="420" cy="40" r="6" fill="#1667c4"/>
+  <g transform="translate(670 132)">
+    <text x="0" y="0" font-size="22" font-family="Manrope, Segoe UI, sans-serif" fill="#1b4f7f" font-weight="800">Skin Cancer Risk</text>
+    <text x="0" y="24" font-size="15" font-family="Manrope, Segoe UI, sans-serif" fill="#4e6f92" font-weight="600">Observed risk trend rises with stronger UV exposure</text>
+    <line x1="0" y1="228" x2="438" y2="228" stroke="#d9e8f7" stroke-width="2"/>
+    <line x1="0" y1="56" x2="0" y2="228" stroke="#d9e8f7" stroke-width="2"/>
+    <line x1="0" y1="176" x2="438" y2="176" stroke="#edf4fb" stroke-width="1.5"/>
+    <line x1="0" y1="124" x2="438" y2="124" stroke="#edf4fb" stroke-width="1.5"/>
+    <polyline points="0,194 62,176 124,154 186,128 248,102 310,74 372,52 438,34" fill="none" stroke="#1b6ec6" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="0" cy="194" r="8" fill="#1b6ec6"/>
+    <circle cx="62" cy="176" r="8" fill="#1b6ec6"/>
+    <circle cx="124" cy="154" r="8" fill="#1b6ec6"/>
+    <circle cx="186" cy="128" r="8" fill="#1b6ec6"/>
+    <circle cx="248" cy="102" r="8" fill="#1b6ec6"/>
+    <circle cx="310" cy="74" r="8" fill="#1b6ec6"/>
+    <circle cx="372" cy="52" r="8" fill="#1b6ec6"/>
+    <circle cx="438" cy="34" r="8" fill="#1b6ec6"/>
+    <text x="8" y="258" font-size="13" font-family="Manrope, Segoe UI, sans-serif" fill="#517396" font-weight="700">Lower risk</text>
+    <text x="430" y="258" font-size="13" font-family="Manrope, Segoe UI, sans-serif" fill="#517396" font-weight="700" text-anchor="end">Higher risk</text>
   </g>
-
-  <text x="84" y="52" font-size="42" font-family="Verdana, sans-serif" fill="#143b60" font-weight="700">Awareness Through Visual Data</text>
-  <text x="84" y="92" font-size="20" font-family="Verdana, sans-serif" fill="#2f628f">Compare UV trends and skin cancer impacts at a glance.</text>
 </svg>

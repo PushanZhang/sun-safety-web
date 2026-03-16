@@ -3,6 +3,7 @@ import AlertBanner from '../components/AlertBanner'
 import UVCard from '../components/UVCard'
 import WeatherCard from '../components/WeatherCard'
 import { fetchClothingRecommendations, fetchCurrentAlerts, fetchCurrentUV, fetchCurrentWeather } from '../services/api'
+import { fetchOpenMeteoCurrent } from '../services/openMeteo'
 
 const FALLBACK_LOCATION = {
   locationName: 'Melbourne',
@@ -12,6 +13,7 @@ const FALLBACK_LOCATION = {
 
 function HomePage() {
   const [location, setLocation] = useState(FALLBACK_LOCATION)
+  const [uvData, setUvData] = useState(null)
   const [uvIndex, setUVIndex] = useState(null)
   const [weather, setWeather] = useState(null)
   const [alert, setAlert] = useState(null)
@@ -19,6 +21,7 @@ function HomePage() {
   const [loadingWeather, setLoadingWeather] = useState(true)
   const [clothingRecs, setClothingRecs] = useState([])
   const [error, setError] = useState('')
+  const [refreshTick, setRefreshTick] = useState(0)
 
   useEffect(() => {
     if (!navigator.geolocation) {
@@ -48,13 +51,26 @@ function HomePage() {
       setLoadingUV(true)
       setLoadingWeather(true)
       try {
-        const [uvRes, weatherRes] = await Promise.all([
-          fetchCurrentUV({ latitude: location.latitude, longitude: location.longitude }),
-          fetchCurrentWeather({ latitude: location.latitude, longitude: location.longitude }),
-        ])
+        let uvRes
+        let weatherRes
+
+        try {
+          const live = await fetchOpenMeteoCurrent({
+            latitude: location.latitude,
+            longitude: location.longitude,
+          })
+          uvRes = live.uv
+          weatherRes = live.weather
+        } catch {
+          ;[uvRes, weatherRes] = await Promise.all([
+            fetchCurrentUV({ latitude: location.latitude, longitude: location.longitude }),
+            fetchCurrentWeather({ latitude: location.latitude, longitude: location.longitude }),
+          ])
+        }
 
         if (!active) return
 
+        setUvData(uvRes)
         setUVIndex(uvRes.uvIndex)
         setWeather(weatherRes)
 
@@ -71,6 +87,7 @@ function HomePage() {
       } catch {
         if (active) {
           setError('Live data is temporarily unavailable. Showing baseline values.')
+          setUvData({ source: 'fallback', observedAt: new Date().toISOString() })
           setUVIndex(8)
           setWeather({ temperatureC: 28, condition: 'Sunny', humidityPct: 48 })
           setAlert({
@@ -97,7 +114,7 @@ function HomePage() {
     return () => {
       active = false
     }
-  }, [location.latitude, location.longitude])
+  }, [location.latitude, location.longitude, refreshTick])
 
   const lastUpdated = useMemo(() => new Date().toLocaleTimeString(), [uvIndex, weather])
 
@@ -114,6 +131,13 @@ function HomePage() {
             <p className="meta-time" aria-label="last updated time">
               Updated {lastUpdated}
             </p>
+            <button
+              type="button"
+              className="refresh-btn"
+              onClick={() => setRefreshTick((value) => value + 1)}
+            >
+              Refresh Live Data
+            </button>
           </div>
         </div>
       </header>
@@ -127,7 +151,13 @@ function HomePage() {
       <AlertBanner alert={alert} />
 
       <div className="grid home-grid">
-        <UVCard locationName={location.locationName} uvIndex={uvIndex} loading={loadingUV} />
+        <UVCard
+          locationName={location.locationName}
+          uvIndex={uvIndex}
+          loading={loadingUV}
+          source={uvData?.source}
+          observedAt={uvData?.observedAt}
+        />
         <WeatherCard weather={weather || {}} loading={loadingWeather} />
       </div>
 

@@ -108,6 +108,22 @@
   font-size: 0.8rem;
 }
 
+.refresh-btn {
+  background: #e9eff9;
+  border: 1px solid #c8d4ea;
+  border-radius: 999px;
+  color: #153566;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-left: 0.28rem;
+  padding: 0.22rem 0.65rem;
+}
+
+.refresh-btn:hover {
+  background: #dce8f9;
+}
+
 .error {
   background: #fff8ed;
   border: 1px solid #edd9b5;
@@ -320,6 +336,9 @@
 }
 
 .awareness-subsection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
   min-height: 100%;
 }
 
@@ -348,17 +367,38 @@
   color: #5b6778;
   font-size: 0.78rem;
   margin: 0.2rem 0 0.5rem;
+  overflow-wrap: anywhere;
 }
 
 .chart-note {
   font-size: 0.78rem;
   margin: 0.4rem 0 0;
+  overflow-wrap: anywhere;
 }
 
 .chart-placeholder {
-  height: 160px;
+  height: 170px;
   display: flex;
   align-items: center;
+  margin: 0;
+}
+
+.chart-area {
+  align-items: center;
+  display: flex;
+  min-height: 180px;
+}
+
+.chart-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100%;
+}
+
+.chart-scroll svg text {
+  paint-order: stroke;
+  stroke: rgba(255, 255, 255, 0.75);
+  stroke-width: 1px;
 }
 
 /* ── Myth grid ── */
@@ -454,6 +494,31 @@
   font-size: 0.82rem;
   font-weight: 600;
   margin: 0.4rem 0 0.2rem;
+}
+
+.skin-select {
+  background: #ffffff;
+  border: 1px solid #cbdaf0;
+  border-radius: 10px;
+  color: #163058;
+  font-size: 0.9rem;
+  margin-top: 0.2rem;
+  max-width: 420px;
+  padding: 0.5rem 0.65rem;
+}
+
+.skin-quiz {
+  border-top: 1px dashed #d6e3f5;
+  margin-top: 0.8rem;
+  padding-top: 0.75rem;
+}
+
+.quiz-label {
+  color: #35517d;
+  display: block;
+  font-size: 0.83rem;
+  font-weight: 600;
+  margin: 0.55rem 0 0.22rem;
 }
 
 .reminder-countdown {
@@ -824,6 +889,12 @@
   color: var(--ink-700);
 }
 
+.awareness-subsection h3,
+.awareness-subsection .section-kicker,
+.awareness-subsection p {
+  overflow-wrap: anywhere;
+}
+
 .reminder-btn-start {
   background: linear-gradient(120deg, #1b5ea6, #147b84);
 }
@@ -857,6 +928,14 @@
   .card {
     border-radius: 15px;
     padding: 0.88rem;
+  }
+
+  .chart-area {
+    min-height: 170px;
+  }
+
+  .chart-scroll {
+    padding-bottom: 0.15rem;
   }
 }
 
