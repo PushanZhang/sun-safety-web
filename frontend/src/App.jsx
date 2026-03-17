@@ -1,15 +1,68 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import AwarenessPage from './pages/AwarenessPage'
+import AdminLoginPage from './pages/AdminLoginPage'
 import HomePage from './pages/HomePage'
 import PreventionPage from './pages/PreventionPage'
+import { adminLogout, fetchAdminSession } from './services/api'
+
+const ADMIN_TOKEN_KEY = 'sun_safety_admin_token'
 
 function App() {
   const [activeTab, setActiveTab] = useState('home')
+  const [authChecked, setAuthChecked] = useState(false)
+  const [adminToken, setAdminToken] = useState('')
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
   }, [activeTab])
+
+  useEffect(() => {
+    const token = localStorage.getItem(ADMIN_TOKEN_KEY) || ''
+    if (!token) {
+      setAuthChecked(true)
+      return
+    }
+
+    fetchAdminSession(token)
+      .then(() => {
+        setAdminToken(token)
+      })
+      .catch(() => {
+        localStorage.removeItem(ADMIN_TOKEN_KEY)
+      })
+      .finally(() => {
+        setAuthChecked(true)
+      })
+  }, [])
+
+  function handleLoginSuccess(payload) {
+    if (!payload?.token) return
+    localStorage.setItem(ADMIN_TOKEN_KEY, payload.token)
+    setAdminToken(payload.token)
+  }
+
+  async function handleLogout() {
+    const token = localStorage.getItem(ADMIN_TOKEN_KEY) || ''
+    if (token) {
+      try {
+        await adminLogout(token)
+      } catch {
+        // ignore logout request errors, local session still cleared
+      }
+    }
+    localStorage.removeItem(ADMIN_TOKEN_KEY)
+    setAdminToken('')
+    setActiveTab('home')
+  }
+
+  if (!authChecked) {
+    return <main className="login-gate"><section className="login-card"><p className="muted">Checking session...</p></section></main>
+  }
+
+  if (!adminToken) {
+    return <AdminLoginPage onLoginSuccess={handleLoginSuccess} />
+  }
 
   return (
     <div className="app-shell">
@@ -39,6 +92,9 @@ function App() {
             type="button"
           >
             Prevention
+          </button>
+          <button type="button" onClick={handleLogout}>
+            Logout
           </button>
         </nav>
       </header>

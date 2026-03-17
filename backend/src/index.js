@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 import express from 'express'
 import fs from 'fs/promises'
 import path from 'path'
+import adminAuthRoutes from './routes/adminAuthRoutes.js'
 import alertRoutes from './routes/alertRoutes.js'
 import awarenessRoutes from './routes/awarenessRoutes.js'
 import clothingRoutes from './routes/clothingRoutes.js'
@@ -39,6 +40,7 @@ app.use('/api/weather', weatherRoutes)
 app.use('/api/alerts', alertRoutes)
 app.use('/api/clothing', clothingRoutes)
 app.use('/api/awareness', awarenessRoutes)
+app.use('/api/admin', adminAuthRoutes)
 
 async function initializeDatabaseIfEnabled() {
   if (process.env.DB_INIT_ON_START !== 'true') return
