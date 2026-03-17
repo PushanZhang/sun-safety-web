@@ -7,10 +7,18 @@ function now() {
   return Date.now()
 }
 
+function readRequiredEnv(name) {
+  const value = process.env[name]
+  if (typeof value !== 'string' || value.trim() === '') {
+    throw new Error(`Missing required env var: ${name}`)
+  }
+  return value
+}
+
 function getConfig() {
   return {
-    username: process.env.ADMIN_USERNAME || 'admin',
-    password: process.env.ADMIN_PASSWORD || 'admin123',
+    username: readRequiredEnv('ADMIN_USERNAME'),
+    password: readRequiredEnv('ADMIN_PASSWORD'),
   }
 }
 
