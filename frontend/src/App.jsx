@@ -10,31 +10,25 @@ const ADMIN_TOKEN_KEY = 'sun_safety_admin_token'
 
 function App() {
   const [activeTab, setActiveTab] = useState('home')
-  const [authChecked, setAuthChecked] = useState(false)
-  const [adminToken, setAdminToken] = useState('')
+  const [adminToken, setAdminToken] = useState(() => localStorage.getItem(ADMIN_TOKEN_KEY) || '')
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
   }, [activeTab])
 
   useEffect(() => {
-    const token = localStorage.getItem(ADMIN_TOKEN_KEY) || ''
-    if (!token) {
-      setAuthChecked(true)
+    if (!adminToken) {
       return
     }
 
-    fetchAdminSession(token)
-      .then(() => {
-        setAdminToken(token)
-      })
+    // Silent session restore: keep UI continuity while validating token in background.
+    fetchAdminSession(adminToken)
       .catch(() => {
         localStorage.removeItem(ADMIN_TOKEN_KEY)
+        setActiveTab('home')
+        setAdminToken('')
       })
-      .finally(() => {
-        setAuthChecked(true)
-      })
-  }, [])
+  }, [adminToken])
 
   function handleLoginSuccess(payload) {
     if (!payload?.token) return
@@ -54,10 +48,6 @@ function App() {
     localStorage.removeItem(ADMIN_TOKEN_KEY)
     setAdminToken('')
     setActiveTab('home')
-  }
-
-  if (!authChecked) {
-    return <main className="login-gate"><section className="login-card"><p className="muted">Checking session...</p></section></main>
   }
 
   if (!adminToken) {
