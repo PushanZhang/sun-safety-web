@@ -74,16 +74,36 @@ function HomePage() {
         setUVIndex(uvRes.uvIndex)
         setWeather(weatherRes)
 
-        const alertRes = await fetchCurrentAlerts({ uvIndex: uvRes.uvIndex })
-        if (!active) return
-        setAlert(alertRes)
+        try {
+          const alertRes = await fetchCurrentAlerts({ uvIndex: uvRes.uvIndex })
+          if (!active) return
+          setAlert(alertRes)
+        } catch {
+          if (active) {
+            setAlert({
+              title: 'UV advisory',
+              message: 'Alert service is temporarily unavailable.',
+              severity: 'medium',
+            })
+          }
+        }
 
-        const clothingRes = await fetchClothingRecommendations({ 
-          uvIndex: uvRes.uvIndex, 
-          temperature: weatherRes.temperatureC ?? 20 
-        })
-        if (!active) return
-        setClothingRecs(clothingRes.recommendations || [])
+        try {
+          const clothingRes = await fetchClothingRecommendations({
+            uvIndex: uvRes.uvIndex,
+            temperature: weatherRes.temperatureC ?? 20,
+          })
+          if (!active) return
+          setClothingRecs(clothingRes.recommendations || [])
+        } catch {
+          if (active) {
+            setClothingRecs([
+              { recommendation_text: 'Use SPF30+ or above before going outdoors.' },
+              { recommendation_text: 'Wear a hat and sunglasses for midday exposure.' },
+              { recommendation_text: 'Plan shade breaks when UV is high or very high.' },
+            ])
+          }
+        }
       } catch {
         if (active) {
           setError('Live data is temporarily unavailable. Showing baseline values.')

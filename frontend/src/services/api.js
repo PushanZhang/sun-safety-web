@@ -27,3 +27,40 @@ export function fetchClothingRecommendations({ uvIndex, temperature }) {
 export function fetchUVMonthly() {
   return request('/api/awareness/uv-monthly')
 }
+
+export function adminLogin({ username, password }) {
+  return fetch(`${API_BASE_URL}/api/admin/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ username, password }),
+  }).then(async (response) => {
+    if (!response.ok) {
+      throw new Error('Invalid admin credentials')
+    }
+    return response.json()
+  })
+}
+
+export function fetchAdminSession(token) {
+  return fetch(`${API_BASE_URL}/api/admin/me`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }).then(async (response) => {
+    if (!response.ok) {
+      throw new Error('Not authenticated')
+    }
+    return response.json()
+  })
+}
+
+export function adminLogout(token) {
+  return fetch(`${API_BASE_URL}/api/admin/logout`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }).then(() => ({ success: true }))
+}
