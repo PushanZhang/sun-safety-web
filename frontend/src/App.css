@@ -1133,3 +1133,338 @@
     box-shadow: 0 10px 0 -5px rgba(25, 74, 118, 0.1), 0 8px 20px rgba(16, 37, 61, 0.1);
   }
 }
+
+/* ── UV card quick-nav links ── */
+.uv-nav-links {
+  display: grid;
+  gap: 0.42rem;
+  margin-top: 0.72rem;
+}
+
+.uv-nav-btn {
+  align-items: center;
+  background: linear-gradient(135deg, rgba(16, 82, 142, 0.07), rgba(16, 143, 144, 0.07));
+  border: 1.5px solid rgba(24, 77, 132, 0.22);
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.52rem 0.68rem;
+  text-align: left;
+  transition: background 150ms ease, transform 150ms ease, border-color 150ms ease;
+  width: 100%;
+}
+
+.uv-nav-btn:hover {
+  background: linear-gradient(135deg, rgba(16, 82, 142, 0.14), rgba(16, 143, 144, 0.14));
+  border-color: rgba(24, 77, 132, 0.42);
+  transform: translateY(-1px);
+}
+
+.uv-nav-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.uv-nav-title {
+  color: #163058;
+  font-size: 0.87rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.uv-nav-sub {
+  color: #5b6778;
+  font-size: 0.74rem;
+  margin: 0.1rem 0 0;
+}
+
+.uv-nav-arrow {
+  color: #173a75;
+  flex-shrink: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* ── Awareness page redesign ── */
+.awareness-stat-row {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.awareness-stat-tile {
+  background: rgba(255, 255, 255, 0.88);
+  border: 2px solid #d2e2f4;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(16, 37, 61, 0.08);
+  padding: 1rem 1.1rem;
+  text-align: center;
+}
+
+.awareness-stat-value {
+  color: #0e4a84;
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.awareness-stat-label {
+  color: #5f7186;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  margin: 0.3rem 0 0;
+}
+
+.chart-legend-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.55rem;
+}
+
+.chart-legend-dot {
+  border-radius: 50%;
+  display: inline-block;
+  height: 9px;
+  width: 9px;
+  flex-shrink: 0;
+}
+
+.chart-legend-dash {
+  border-top: 2px dashed #ff9b2f;
+  display: inline-block;
+  flex-shrink: 0;
+  margin-left: 0.4rem;
+  width: 18px;
+}
+
+.chart-legend-label {
+  color: #607089;
+  font-size: 0.74rem;
+}
+
+/* ── UV Level Guide ── */
+.uv-level-guide {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.75rem;
+}
+
+.uv-level-row {
+  align-items: center;
+  border-left: 4px solid;
+  border-radius: 10px;
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.55rem 0.85rem;
+}
+
+.uv-level-badge {
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 0.2rem 0.65rem;
+  white-space: nowrap;
+}
+
+.uv-level-range {
+  font-size: 0.85rem;
+  font-weight: 700;
+  min-width: 2.2rem;
+  text-align: center;
+}
+
+.uv-level-tip {
+  color: #3a4f68;
+  font-size: 0.83rem;
+}
+
+/* ── Myth / Fact cards ── */
+.myth-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.myth-block {
+  background: #fff5f5;
+  border-radius: 10px 10px 0 0;
+  border: 1px solid #f5c6c6;
+  padding: 0.6rem 0.75rem;
+}
+
+.fact-block {
+  background: #f3fbf4;
+  border-radius: 0 0 10px 10px;
+  border: 1px solid #b8e4bc;
+  border-top: none;
+  padding: 0.6rem 0.75rem;
+}
+
+.myth-text,
+.fact-text {
+  color: #2d3f56;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  margin: 0.2rem 0 0;
+}
+
+/* ── Fact list & checklist ── */
+.awareness-fact-list {
+  display: grid;
+  gap: 0.55rem;
+  list-style: none;
+  margin: 0.65rem 0 0;
+  padding: 0;
+}
+
+.awareness-fact-list li {
+  background: #f5f9ff;
+  border: 1px solid #d7e5f8;
+  border-left: 3px solid #0e4a84;
+  border-radius: 8px;
+  color: #223a61;
+  font-size: 0.85rem;
+  padding: 0.5rem 0.7rem;
+}
+
+.awareness-checklist {
+  display: grid;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0.65rem 0 0;
+  padding: 0;
+}
+
+.awareness-checklist li {
+  align-items: flex-start;
+  background: #f3fbf4;
+  border: 1px solid #b8e4bc;
+  border-left: 3px solid #2e7d32;
+  border-radius: 8px;
+  color: #1b3d22;
+  font-size: 0.85rem;
+  padding: 0.5rem 0.7rem;
+}
+
+@media (max-width: 900px) {
+  .awareness-stat-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── City selector dropdown ── */
+.city-selector {
+  position: relative;
+}
+
+.city-selector-btn {
+  white-space: nowrap;
+}
+
+.city-dropdown {
+  background: rgba(255, 255, 255, 0.97);
+  border: 1.5px solid #c8d8ee;
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(14, 37, 80, 0.14);
+  left: 0;
+  min-width: 180px;
+  padding: 0.4rem;
+  position: absolute;
+  top: calc(100% + 6px);
+  z-index: 200;
+}
+
+.city-dropdown-item {
+  align-items: center;
+  border-radius: 9px;
+  cursor: default;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+  padding: 0.48rem 0.65rem;
+  position: relative;
+  transition: background 120ms ease;
+}
+
+.city-dropdown-item:hover {
+  background: rgba(219, 234, 254, 0.6);
+}
+
+.city-dropdown-name {
+  color: #163058;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.city-dropdown-badge {
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  white-space: nowrap;
+}
+
+/* ── Floating city preview panel ── */
+.city-float-panel {
+  background: rgba(214, 234, 255, 0.97);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(96, 165, 250, 0.35);
+  border-radius: 14px;
+  box-shadow: 0 8px 28px rgba(14, 50, 120, 0.16);
+  left: calc(100% + 10px);
+  min-width: 200px;
+  padding: 0.75rem 0.9rem;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  z-index: 300;
+}
+
+.city-float-title {
+  color: #0e3a6e;
+  font-size: 0.92rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  margin: 0 0 0.5rem;
+}
+
+.city-float-loading {
+  color: #4a6f9c;
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+.city-float-metrics {
+  display: grid;
+  gap: 0.32rem;
+}
+
+.city-float-row {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.city-float-label {
+  color: #4a6282;
+  font-size: 0.78rem;
+}
+
+.city-float-value {
+  color: #0d2a50;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.city-float-uv {
+  border-radius: 999px;
+  color: #fff;
+  padding: 0.12rem 0.55rem;
+}

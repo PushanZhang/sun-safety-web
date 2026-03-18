@@ -28,6 +28,10 @@ export function fetchUVMonthly() {
   return request('/api/awareness/uv-monthly')
 }
 
+export function fetchCancerStats() {
+  return request('/api/awareness/cancer-stats')
+}
+
 export function adminLogin({ username, password }) {
   return fetch(`${API_BASE_URL}/api/admin/login`, {
     method: 'POST',

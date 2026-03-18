@@ -311,3 +311,48 @@ export async function getMonthlyUVAverages() {
     { month: 12, avg_uv: 10.0, peak_uv: 12.2 },
   ]
 }
+
+/* ------------------------------------------------------------------ */
+/*  Awareness: melanoma cases from CANCER_STATISTIC table             */
+/* ------------------------------------------------------------------ */
+export async function getMelanomaCases() {
+  const CANCER_TYPE = 'Melanoma of the skin'
+  const YEAR_FROM = 2005
+
+  // Primary: pre-aggregated 'All ages combined' + 'Persons' row per year
+  // Note: "count" is quoted because it is a reserved word in PostgreSQL
+  const { rows } = await pool.query(
+    `SELECT year,
+            SUM("count")::int                       AS total_cases,
+            ROUND(AVG(rate_per_100k)::numeric, 1) AS rate_per_100k
+       FROM cancer_statistic
+      WHERE cancer_type = $1
+        AND age_group   = 'All ages combined'
+        AND sex         = 'Persons'
+        AND metric_type = 'Actual'
+        AND year       >= $2
+      GROUP BY year
+      ORDER BY year ASC`,
+    [CANCER_TYPE, YEAR_FROM],
+  )
+
+  if (rows.length > 0) return rows
+
+  // Fallback: sum male + female across individual age bands
+  const fallback = await pool.query(
+    `SELECT year,
+            SUM("count")::int AS total_cases,
+            NULL              AS rate_per_100k
+       FROM cancer_statistic
+      WHERE cancer_type = $1
+        AND sex IN ('Males', 'Females')
+        AND age_group  != 'All ages combined'
+        AND metric_type = 'Actual'
+        AND year       >= $2
+      GROUP BY year
+      ORDER BY year ASC`,
+    [CANCER_TYPE, YEAR_FROM],
+  )
+
+  return fallback.rows
+}

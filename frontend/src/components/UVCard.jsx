@@ -16,7 +16,7 @@ const RISK_SEGMENTS = [
   { label: 'Extreme', color: '#6a1b9a' },
 ]
 
-function UVCard({ locationName, uvIndex, loading, source, observedAt }) {
+function UVCard({ locationName, uvIndex, loading, source, observedAt, onNavigate }) {
   const safeUV = Number.isFinite(uvIndex) ? uvIndex : 0
   const { level, color } = getUVLevelInfo(safeUV)
   const activeRiskIndex = getRiskIndex(safeUV)
@@ -64,6 +64,34 @@ function UVCard({ locationName, uvIndex, loading, source, observedAt }) {
             Source: {source || 'unknown'}
             {observedLabel ? ` | Observed: ${observedLabel}` : ''}
           </p>
+
+          {onNavigate && (
+            <div className="uv-nav-links">
+              <button
+                className="uv-nav-btn"
+                onClick={() => onNavigate('awareness')}
+                type="button"
+              >
+                <div className="uv-nav-content">
+                  <p className="uv-nav-title">Understand the Risk</p>
+                  <p className="uv-nav-sub">UV trends, melanoma data &amp; busted myths</p>
+                </div>
+                <span className="uv-nav-arrow">&#8594;</span>
+              </button>
+              <button
+                className="uv-nav-btn"
+                onClick={() => onNavigate('prevention')}
+                type="button"
+              >
+                <div className="uv-nav-content">
+                  <p className="uv-nav-title">Plan Your Protection</p>
+                  <p className="uv-nav-sub">Outfit guide, SPF dosage &amp; reapplication timer</p>
+                </div>
+                <span className="uv-nav-arrow">&#8594;</span>
+              </button>
+            </div>
+          )}
+
           {getBurnTimeMinutes(safeUV) !== null && (
             <p className="burn-alert" style={{ borderLeftColor: color }}>
               ⚠ Unprotected skin may begin to burn in ~{getBurnTimeMinutes(safeUV)} min — apply SPF50+ now

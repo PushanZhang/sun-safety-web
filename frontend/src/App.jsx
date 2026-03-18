@@ -89,7 +89,7 @@ function App() {
         </nav>
       </header>
 
-      {activeTab === 'home' ? <HomePage /> : null}
+      {activeTab === 'home' ? <HomePage onNavigate={setActiveTab} /> : null}
       {activeTab === 'awareness' ? <AwarenessPage /> : null}
       {activeTab === 'prevention' ? <PreventionPage /> : null}
     </div>
