@@ -9,8 +9,15 @@ const host = process.env.DB_HOST || 'localhost'
 const dbSsl = process.env.DB_SSL
 const isLocalHost = ['localhost', '127.0.0.1', '::1'].includes(host)
 
-// Default to no SSL for local PostgreSQL, keep SSL for remote DB unless explicitly overridden.
-const useSsl = dbSsl === 'true' ? true : dbSsl === 'false' ? false : !isLocalHost
+let useSsl
+if (dbSsl === 'true') {
+  useSsl = true
+} else if (dbSsl === 'false') {
+  useSsl = false
+} else {
+  // Default to no SSL for local PostgreSQL, keep SSL for remote DB unless explicitly overridden.
+  useSsl = !isLocalHost
+}
 
 const pool = new Pool({
   host,
