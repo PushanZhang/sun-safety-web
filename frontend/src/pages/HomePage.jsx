@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import AlertBanner from '../components/AlertBanner'
 import UVCard from '../components/UVCard'
 import WeatherCard from '../components/WeatherCard'
 import { fetchClothingRecommendations, fetchCurrentAlerts, fetchCurrentUV, fetchCurrentWeather } from '../services/api'
 import { fetchOpenMeteoCurrent } from '../services/openMeteo'
+import { getUVLevelInfo } from '../utils/uv'
 
 const FALLBACK_LOCATION = {
   locationName: 'Melbourne',
@@ -11,7 +12,19 @@ const FALLBACK_LOCATION = {
   longitude: 144.9631,
 }
 
-function HomePage() {
+const CITIES = [
+  { name: 'Sydney',      latitude: -33.8688, longitude: 151.2093 },
+  { name: 'Melbourne',   latitude: -37.8136, longitude: 144.9631 },
+  { name: 'Brisbane',    latitude: -27.4698, longitude: 153.0251 },
+  { name: 'Perth',       latitude: -31.9505, longitude: 115.8605 },
+  { name: 'Adelaide',    latitude: -34.9285, longitude: 138.6007 },
+  { name: 'Gold Coast',  latitude: -28.0167, longitude: 153.4000 },
+  { name: 'Canberra',    latitude: -35.2809, longitude: 149.1300 },
+  { name: 'Hobart',      latitude: -42.8821, longitude: 147.3272 },
+  { name: 'Darwin',      latitude: -12.4634, longitude: 130.8456 },
+]
+
+function HomePage({ onNavigate }) {
   const [location, setLocation] = useState(FALLBACK_LOCATION)
   const [uvData, setUvData] = useState(null)
   const [uvIndex, setUVIndex] = useState(null)
@@ -23,18 +36,44 @@ function HomePage() {
   const [error, setError] = useState('')
   const [refreshTick, setRefreshTick] = useState(0)
 
+  const [citiesOpen, setCitiesOpen] = useState(false)
+  const [hoveredCity, setHoveredCity] = useState(null)
+  const [cityDataCache, setCityDataCache] = useState({})
+  const [cityLoadingMap, setCityLoadingMap] = useState({})
+  const citySelectorRef = useRef(null)
+
   useEffect(() => {
     if (!navigator.geolocation) {
       return
     }
 
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      async (position) => {
+        const { latitude, longitude } = position.coords
+        let locationName = 'Your current location'
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
+            { headers: { 'Accept-Language': 'en' } },
+          )
+          const data = await res.json()
+          const addr = data.address || {}
+          locationName =
+            addr.suburb ||
+            addr.neighbourhood ||
+            addr.town ||
+            addr.village ||
+            addr.city ||
+            addr.county ||
+            'Your current location'
+        } catch {
+          // geocoding failed — keep generic label
+        }
         setLocation((current) => ({
           ...current,
-          locationName: 'Your current location',
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
+          locationName,
+          latitude,
+          longitude,
         }))
       },
       () => {
@@ -136,6 +175,32 @@ function HomePage() {
     }
   }, [location.latitude, location.longitude, refreshTick])
 
+  // Close city dropdown when clicking outside
+  useEffect(() => {
+    function onClickOutside(e) {
+      if (citySelectorRef.current && !citySelectorRef.current.contains(e.target)) {
+        setCitiesOpen(false)
+        setHoveredCity(null)
+      }
+    }
+    document.addEventListener('mousedown', onClickOutside)
+    return () => document.removeEventListener('mousedown', onClickOutside)
+  }, [])
+
+  async function handleCityHover(city) {
+    setHoveredCity(city)
+    if (cityDataCache[city.name] !== undefined) return // already cached (even if null)
+    setCityLoadingMap((prev) => ({ ...prev, [city.name]: true }))
+    try {
+      const live = await fetchOpenMeteoCurrent({ latitude: city.latitude, longitude: city.longitude })
+      setCityDataCache((prev) => ({ ...prev, [city.name]: live }))
+    } catch {
+      setCityDataCache((prev) => ({ ...prev, [city.name]: null }))
+    } finally {
+      setCityLoadingMap((prev) => ({ ...prev, [city.name]: false }))
+    }
+  }
+
   const lastUpdated = useMemo(() => new Date().toLocaleTimeString(), [uvIndex, weather])
 
   return (
@@ -158,6 +223,87 @@ function HomePage() {
             >
               Refresh Live Data
             </button>
+
+            {/* City selector */}
+            <div className="city-selector" ref={citySelectorRef}>
+              <button
+                type="button"
+                className="refresh-btn city-selector-btn"
+                onClick={() => setCitiesOpen((v) => !v)}
+              >
+                Australian Cities {citiesOpen ? '▲' : '▼'}
+              </button>
+
+              {citiesOpen && (
+                <div className="city-dropdown">
+                  {CITIES.map((city) => {
+                    const data = cityDataCache[city.name]
+                    const isLoading = cityLoadingMap[city.name]
+                    const isHovered = hoveredCity?.name === city.name
+                    const uv = data?.uv
+                    const wx = data?.weather
+                    const uvInfo = uv ? getUVLevelInfo(uv.uvIndex) : null
+
+                    return (
+                      <div
+                        key={city.name}
+                        className="city-dropdown-item"
+                        onMouseEnter={() => handleCityHover(city)}
+                        onMouseLeave={() => setHoveredCity(null)}
+                      >
+                        <span className="city-dropdown-name">{city.name}</span>
+                        {uv && (
+                          <span
+                            className="city-dropdown-badge"
+                            style={{ background: uvInfo.color }}
+                          >
+                            UV {uv.uvIndex.toFixed(1)}
+                          </span>
+                        )}
+
+                        {/* Floating preview panel */}
+                        {isHovered && (
+                          <div className="city-float-panel">
+                            <p className="city-float-title">{city.name}</p>
+                            {isLoading && <p className="city-float-loading">Loading...</p>}
+                            {!isLoading && !data && (
+                              <p className="city-float-loading">Data unavailable</p>
+                            )}
+                            {!isLoading && uv && wx && (
+                              <div className="city-float-metrics">
+                                <div className="city-float-row">
+                                  <span className="city-float-label">UV Index</span>
+                                  <span
+                                    className="city-float-value city-float-uv"
+                                    style={{ background: uvInfo.color }}
+                                  >
+                                    {uv.uvIndex.toFixed(1)} · {uvInfo.level}
+                                  </span>
+                                </div>
+                                <div className="city-float-row">
+                                  <span className="city-float-label">Temperature</span>
+                                  <span className="city-float-value">{wx.temperatureC}°C</span>
+                                </div>
+                                <div className="city-float-row">
+                                  <span className="city-float-label">Condition</span>
+                                  <span className="city-float-value">{wx.condition}</span>
+                                </div>
+                                {wx.humidityPct != null && (
+                                  <div className="city-float-row">
+                                    <span className="city-float-label">Humidity</span>
+                                    <span className="city-float-value">{wx.humidityPct}%</span>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </header>
@@ -177,6 +323,7 @@ function HomePage() {
           loading={loadingUV}
           source={uvData?.source}
           observedAt={uvData?.observedAt}
+          onNavigate={onNavigate}
         />
         <WeatherCard weather={weather || {}} loading={loadingWeather} />
       </div>

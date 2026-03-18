@@ -170,12 +170,32 @@ function PreventionPage() {
     }
 
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      async (position) => {
+        const { latitude, longitude } = position.coords
+        let locationName = 'Your current location'
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
+            { headers: { 'Accept-Language': 'en' } },
+          )
+          const data = await res.json()
+          const addr = data.address || {}
+          locationName =
+            addr.suburb ||
+            addr.neighbourhood ||
+            addr.town ||
+            addr.village ||
+            addr.city ||
+            addr.county ||
+            'Your current location'
+        } catch {
+          // geocoding failed — keep generic label
+        }
         setLocation((current) => ({
           ...current,
-          locationName: 'Your current location',
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
+          locationName,
+          latitude,
+          longitude,
         }))
       },
       () => {
