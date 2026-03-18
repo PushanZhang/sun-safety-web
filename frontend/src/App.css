@@ -1468,3 +1468,763 @@
   color: #fff;
   padding: 0.12rem 0.55rem;
 }
+
+/* ================================================================== */
+/*  PREVENTION PAGE - REDESIGNED STEPPED LAYOUT                       */
+/* ================================================================== */
+
+.prevention-step {
+  border-left: 4px solid #173a75;
+  background: linear-gradient(135deg, rgba(23, 58, 117, 0.02), rgba(255, 155, 47, 0.02));
+}
+
+.prevention-step .section-head {
+  padding-bottom: 0.5rem;
+}
+
+.prevention-step .section-subtitle {
+  color: #35517d;
+  font-size: 0.88rem;
+  margin: 0.25rem 0 0;
+}
+
+/* ─── Step 1: Current Conditions ─── */
+.step-current-conditions .section-head {
+  border-bottom: 1px dashed #cfe0fb;
+  padding-bottom: 0.65rem;
+}
+
+.current-conditions-row {
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  margin-bottom: 1rem;
+}
+
+.condition-metric {
+  background: #f8fbff;
+  border: 1px solid #d7e5f8;
+  border-radius: 10px;
+  padding: 0.75rem;
+}
+
+.metric-label {
+  color: #35517d;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  margin: 0 0 0.35rem;
+  text-transform: uppercase;
+}
+
+.metric-display {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.metric-value {
+  color: #0f2447;
+  font-size: 1.65rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.metric-note {
+  font-size: 0.75rem;
+  margin: 0.15rem 0 0;
+}
+
+.recommendations-section {
+  margin-top: 0.85rem;
+}
+
+.recommendations-section .subsection-title {
+  color: #122e56;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0 0 0.6rem;
+}
+
+.clothing-grid {
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  margin-top: 0.6rem;
+}
+
+.clothing-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f9fcff 100%);
+  border: 1.5px solid #d0e0f6;
+  border-radius: 12px;
+  padding: 0.8rem;
+  transition: all 0.2s ease;
+}
+
+.clothing-card:hover {
+  border-color: #a0c8f0;
+  box-shadow: 0 4px 12px rgba(16, 74, 132, 0.08);
+}
+
+.clothing-card .clothing-title {
+  color: #0f2a4e;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.25;
+  margin: 0 0 0.35rem;
+}
+
+.clothing-level-badge {
+  background: #e8f0fe;
+  border-radius: 999px;
+  color: #1a3c7e;
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.35rem;
+  padding: 0.18rem 0.5rem;
+  text-transform: uppercase;
+}
+
+.clothing-card .clothing-text {
+  color: #35517d;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* ─── Step 2: Skin Profile Quiz ─── */
+.step-skin-profile {
+  background: linear-gradient(135deg, rgba(255, 155, 47, 0.04), rgba(23, 58, 117, 0.03));
+}
+
+.skin-profile-section {
+  margin-top: 0.75rem;
+}
+
+.quiz-container {
+  background: #ffffff;
+  border: 1px solid #e2e9f5;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.quiz-question {
+  margin-bottom: 0.85rem;
+}
+
+.quiz-question:last-child {
+  margin-bottom: 0;
+}
+
+.quiz-label {
+  color: #153566;
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin: 0 0 0.35rem;
+}
+
+.quiz-label::before {
+  content: '';
+}
+
+.skin-select {
+  background: #f8fbff;
+  border: 1px solid #cbdaf0;
+  border-radius: 8px;
+  color: #163058;
+  cursor: pointer;
+  font-size: 0.88rem;
+  padding: 0.5rem 0.65rem;
+  width: 100%;
+  max-width: none;
+  transition: border-color 0.2s;
+}
+
+.skin-select:focus {
+  border-color: #173a75;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(23, 58, 117, 0.1);
+}
+
+.quiz-suggestion-box {
+  background: linear-gradient(135deg, #e8f0fe, #f0ecff);
+  border: 1.5px solid #a0c8f0;
+  border-radius: 12px;
+  padding: 0.85rem;
+  margin-top: 0.75rem;
+}
+
+.suggestion-label {
+  color: #35517d;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  margin: 0 0 0.25rem;
+  text-transform: uppercase;
+}
+
+.suggestion-profile {
+  color: #0f2447;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0.1rem 0 0.5rem 0;
+}
+
+.reminder-btn-apply {
+  background: #173a75;
+  color: #fff;
+  font-size: 0.8rem;
+  margin-top: 0.35rem;
+  padding: 0.4rem 0.8rem;
+  width: 100%;
+}
+
+.profile-applied-badge {
+  background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+  border: 1.5px solid #81C784;
+  border-radius: 8px;
+  color: #2E7D32;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  text-align: center;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── Step 3: Sun Protection Advice ─── */
+.step-sun-protection-advice {
+  background: linear-gradient(135deg, rgba(198, 40, 40, 0.02), rgba(23, 58, 117, 0.02));
+  position: relative;
+  overflow: hidden;
+}
+
+.step-sun-protection-advice::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle at 100% 0%, rgba(255, 193, 7, 0.08), transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.protection-advice-container {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 0.75rem;
+}
+
+.advice-card {
+  border-radius: 12px;
+  padding: 0.9rem;
+  border-left: 4px solid;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.advice-card.advice-very_high {
+  background: #fff3f3;
+  border-left-color: #c62828;
+  color: #5b2424;
+}
+
+.advice-card.advice-high {
+  background: #fff8f0;
+  border-left-color: #ef6c00;
+  color: #6b3000;
+}
+
+.advice-card.advice-moderate {
+  background: #f0f7ff;
+  border-left-color: #1976d2;
+  color: #1a3c56;
+}
+
+.advice-card.advice-low {
+  background: #f0fbf7;
+  border-left-color: #2e7d32;
+  color: #1a4620;
+}
+
+.advice-text {
+  margin: 0;
+  font-weight: 600;
+}
+
+.selected-profile-details {
+  background: #fafbfc;
+  border: 1px solid #dde5f1;
+  border-radius: 10px;
+  padding: 0.8rem;
+}
+
+.profile-name {
+  color: #0f2447;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0 0 0.35rem;
+}
+
+.profile-guidance {
+  color: #35517d;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  margin: 0.25rem 0 0.4rem;
+}
+
+.reminder-interval {
+  color: #183058;
+  font-size: 0.8rem;
+  margin: 0.3rem 0 0;
+}
+
+.high-risk-alert-banner {
+  background: linear-gradient(135deg, #fff3f3, #ffe8e8);
+  border: 1.5px solid #f48080;
+  border-radius: 12px;
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.85rem;
+}
+
+.alert-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  margin-top: 0.05rem;
+  flex-shrink: 0;
+}
+
+.alert-content {
+  flex-grow: 1;
+}
+
+.alert-title {
+  color: #c62828;
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+}
+
+.alert-message {
+  color: #5b2424;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ─── Step 4: Dosage Calculator ─── */
+.step-dosage {
+  background: linear-gradient(135deg, rgba(46, 125, 50, 0.04), rgba(23, 58, 117, 0.03));
+  position: relative;
+  overflow: hidden;
+}
+
+.step-dosage::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(circle at 100% 0%, rgba(255, 152, 0, 0.08), transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.dosage-summary-card {
+  background: #f0fbf7;
+  border: 1px solid #c8e6c9;
+  border-radius: 10px;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.dosage-summary-card .dosage-main {
+  color: #1a4620;
+  font-size: 0.9rem;
+  margin: 0 0 0.3rem;
+}
+
+.dosage-summary-card .dosage-note {
+  color: #2d5a2d;
+  font-size: 0.78rem;
+  margin: 0;
+}
+
+.dosage-breakdown {
+  margin-top: 0.75rem;
+}
+
+.dosage-breakdown .subsection-title {
+  color: #122e56;
+  font-size: 0.88rem;
+  font-weight: 700;
+  margin: 0 0 0.55rem;
+}
+
+/* ─── Step Decorations (Sun & Sunscreen Icons) ─── */
+.step-decoration {
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.sun-icon {
+  filter: drop-shadow(0 2px 4px rgba(255, 177, 0, 0.2));
+}
+
+.sunscreen-bottle {
+  filter: drop-shadow(0 2px 4px rgba(255, 152, 0, 0.2));
+}
+
+/* ─── Timer Decoration ─── */
+.timer-decoration {
+  width: 80px;
+  height: 80px;
+  margin: 0.5rem auto;
+  display: block;
+  filter: drop-shadow(0 2px 6px rgba(25, 118, 210, 0.2));
+  animation: clockTick 1s ease-in-out infinite;
+}
+
+@keyframes clockTick {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* ─── Good Job Popup ─── */
+.good-job-overlay {
+  align-items: center;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  animation: fadeIn 0.2s ease-out;
+  pointer-events: auto;
+}
+
+.good-job-popup {
+  background: linear-gradient(135deg, #FFFFFF, #F5F9FF);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(25, 118, 210, 0.1);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  width: 90%;
+  max-width: 300px;
+  animation: slideUp 0.3s ease-out;
+  border: 2px solid rgba(25, 118, 210, 0.2);
+}
+
+.good-job-emoji {
+  font-size: 3rem;
+  line-height: 1;
+  margin: 0 0 0.5rem;
+  display: block;
+  animation: bounce 0.6s ease-out;
+}
+
+.good-job-text {
+  color: #1B3A6B;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  margin: 0 0 0.35rem;
+}
+
+.good-job-subtext {
+  color: #35517D;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+@keyframes bounce {
+  0% {
+    transform: scale(0) rotate(-30deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* ─── Step 5: Reminder Timer ─── */
+.step-reminder {
+  background: linear-gradient(135deg, rgba(25, 118, 210, 0.04), rgba(23, 58, 117, 0.03));
+}
+
+.reminder-state {
+  background: #f8fbff;
+  border: 1px solid #d0e0f6;
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.reminder-state-title {
+  color: #c62828;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+
+.reminder-state-message {
+  color: #35517d;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  margin: 0 0 0.8rem;
+}
+
+.reminder-state-label {
+  color: #35517d;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 0 0 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.reminder-countdown {
+  color: #0f2447;
+  font-size: 2.5rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+  margin: 0.35rem 0 0.85rem;
+}
+
+.reminder-profile-note {
+  color: #35517d;
+  font-size: 0.78rem;
+  margin: 0.5rem 0 0.75rem;
+}
+
+.reminder-idle-text {
+  color: #35517d;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  margin: 0 0 0.85rem;
+}
+
+.reminder-btn-start {
+  background: #173a75;
+  color: #fff;
+}
+
+.reminder-btn-stop {
+  background: linear-gradient(135deg, #2e7d32, #1b5e20);
+  border: none;
+  color: #fff;
+  width: 100%;
+  font-size: 0.95rem;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+}
+
+.reminder-btn-stop:hover {
+  background: linear-gradient(135deg, #388e3c, #2e7d32);
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+}
+
+.reminder-btn-confirm {
+  background: #2e7d32;
+  color: #fff;
+  width: 100%;
+}
+
+.reminder-btn-secondary {
+  background: #e9eff9;
+  border: 1px solid #b8c8e6;
+  color: #153566;
+}
+
+/* ─── Notification Popup ─── */
+.reminder-notification-overlay {
+  align-items: center;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reminder-notification-popup {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 420px;
+  padding: 1.5rem;
+  width: 90%;
+  animation: slideUp 0.3s ease-out;
+}
+
+.notification-title {
+  color: #c62828;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+
+.notification-message {
+  color: #35517d;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0 0 1rem;
+}
+
+.notification-actions {
+  display: flex;
+  gap: 0.65rem;
+  flex-direction: column;
+}
+
+.notification-actions .reminder-btn {
+  width: 100%;
+  padding: 0.6rem 1rem;
+}
+
+/* ─── Error Banner ─── */
+.error-banner {
+  background: #fff3f3;
+  border: 1px solid #f5a5a5;
+  border-radius: 10px;
+  color: #5b2424;
+  font-size: 0.88rem;
+  padding: 0.8rem;
+}
+
+.error-banner p {
+  margin: 0;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 900px) {
+  .current-conditions-row {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+
+  .clothing-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+
+  .prevention-step {
+    border-left: 3px solid #173a75;
+  }
+}
+
+@media (max-width: 680px) {
+  .prevention-page {
+    gap: 0.6rem;
+  }
+
+  .prevention-step {
+    border-left: 2px solid #173a75;
+  }
+
+  .prevention-step .section-head {
+    margin-bottom: 0.55rem;
+  }
+
+  .current-conditions-row {
+    grid-template-columns: 1fr;
+  }
+
+  .clothing-grid {
+    grid-template-columns: repeat(auto-fill, minmax(1fr, 1fr));
+  }
+
+  .reminder-countdown {
+    font-size: 1.8rem;
+  }
+
+  .metric-value {
+    font-size: 1.2rem;
+  }
+
+  .advice-card {
+    padding: 0.7rem;
+    font-size: 0.82rem;
+  }
+
+  .reminder-notification-popup {
+    max-width: 85vw;
+    padding: 1rem;
+  }
+
+  .notification-title {
+    font-size: 1rem;
+  }
+
+  .notification-message {
+    font-size: 0.82rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .reminder-countdown {
+    font-size: 1.5rem;
+  }
+
+  .metric-value {
+    font-size: 1rem;
+  }
+
+  .quiz-container {
+    padding: 0.75rem;
+  }
+}

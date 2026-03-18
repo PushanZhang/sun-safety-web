@@ -9,66 +9,70 @@ const SKIN_PROFILES = {
     recommendedSpf: 'SPF50+',
     reminderMinutes: 90,
     guidance: 'Your skin tends to burn quickly. Prioritize shade and frequent reapplication.',
+    sunburnRiskLevel: 'very_high',
+    sunburnAdvice: '🚨 CRITICAL: You burn very easily! Apply SPF50+ immediately and reapply every 90 minutes. Seek shade during peak UV hours (10am-4pm).',
   },
   fair: {
     label: 'Fair / usually burns first',
     recommendedSpf: 'SPF50+',
     reminderMinutes: 105,
     guidance: 'Use stronger SPF and keep reapplication intervals shorter on sunny days.',
+    sunburnRiskLevel: 'high',
+    sunburnAdvice: '⚠ HIGH RISK: You burn easily! Use SPF50+ and reapply every 105 minutes. Wear protective clothing and seek shade when possible.',
   },
   medium: {
     label: 'Medium / sometimes burns',
     recommendedSpf: 'SPF30+',
     reminderMinutes: 120,
     guidance: 'Maintain regular SPF use and reapply every 2 hours in outdoor exposure.',
+    sunburnRiskLevel: 'moderate',
+    sunburnAdvice: '✓ MODERATE RISK: Use SPF30+ and reapply every 2 hours. UV protection is still essential for cumulative damage prevention.',
   },
   olive: {
     label: 'Olive / rarely burns',
     recommendedSpf: 'SPF30+',
     reminderMinutes: 120,
     guidance: 'UV still causes long-term damage. Keep sunscreen and protective clothing routine.',
+    sunburnRiskLevel: 'low',
+    sunburnAdvice: '℃ LOW RISK: While you rarely burn, UV damage still accumulates. Use SPF30+ regularly as part of your routine.',
   },
   brown_black: {
     label: 'Brown / dark skin tone',
     recommendedSpf: 'SPF30+',
     reminderMinutes: 120,
     guidance: 'Melanin adds some protection, but UV damage still accumulates over time.',
+    sunburnRiskLevel: 'low',
+    sunburnAdvice: '℃ LOW RISK: Melanin provides natural protection, but cumulative UV damage is still a concern. Use SPF30+ regularly.',
   },
 }
 
 function recommendProfileFromQuiz({ burnResponse, tanResponse, freckleResponse }) {
-  let score = 0
+  // Weighted Fitzpatrick-like risk score: burn tendency matters most, then tanning, then freckles.
+  const burnRisk = { always: 4, sometimes: 3, rarely: 2, never: 1 }
+  const tanRisk = { never: 4, light: 3, easy: 2 }
+  const freckleRisk = { many: 3, some: 2, none: 1 }
 
-  if (burnResponse === 'always') score += 3
-  if (burnResponse === 'sometimes') score += 2
-  if (burnResponse === 'rarely') score += 1
+  const burnNorm = ((burnRisk[burnResponse] || 1) - 1) / 3
+  const tanNorm = ((tanRisk[tanResponse] || 2) - 1) / 3
+  const freckleNorm = ((freckleRisk[freckleResponse] || 1) - 1) / 2
 
-  if (tanResponse === 'never') score += 3
-  if (tanResponse === 'light') score += 2
-  if (tanResponse === 'easy') score += 1
+  const riskScore = Math.round((burnNorm * 0.5 + tanNorm * 0.35 + freckleNorm * 0.15) * 100)
 
-  if (freckleResponse === 'many') score += 2
-  if (freckleResponse === 'some') score += 1
-
-  if (score >= 7) return 'very_fair'
-  if (score >= 5) return 'fair'
-  if (score >= 3) return 'medium'
-  if (score >= 2) return 'olive'
-  return 'brown_black'
+  if (riskScore >= 82) return { profile: 'very_fair', riskScore }
+  if (riskScore >= 64) return { profile: 'fair', riskScore }
+  if (riskScore >= 44) return { profile: 'medium', riskScore }
+  if (riskScore >= 20) return { profile: 'olive', riskScore }
+  return { profile: 'brown_black', riskScore }
 }
 
-/* ------------------------------------------------------------------ */
-/*  US3.1 helper: sunscreen dosage info based on UV                   */
-/* ------------------------------------------------------------------ */
-const BODY_PARTS = [
-  'Face, neck & ears',
-  'Left arm',
-  'Right arm',
-  'Front torso',
-  'Back torso',
-  'Left leg',
-  'Right leg',
-]
+// Determine if sunburn risk is HIGH (based on UV + skin profile)
+function isHighSunburnRisk(uvIndex, skinProfile) {
+  if (!SKIN_PROFILES[skinProfile]) return false
+  const profile = SKIN_PROFILES[skinProfile]
+  const isHighRiskProfile = ['very_fair', 'fair'].includes(skinProfile)
+  const isHighUV = uvIndex >= 6
+  return isHighRiskProfile || isHighUV
+}
 
 function getDosageInfo(uvIndex, skinProfile) {
   if (!Number.isFinite(uvIndex) || uvIndex < 3) return null
@@ -97,6 +101,16 @@ function formatCountdown(seconds) {
   return [h, m, s].map((n) => String(n).padStart(2, '0')).join(':')
 }
 
+const BODY_PARTS = [
+  'Face, neck & ears',
+  'Left arm',
+  'Right arm',
+  'Front torso',
+  'Back torso',
+  'Left leg',
+  'Right leg',
+]
+
 const FALLBACK_LOCATION = {
   locationName: 'Melbourne',
   latitude: -37.8136,
@@ -117,9 +131,12 @@ function PreventionPage() {
     tanResponse: 'easy',
     freckleResponse: 'none',
   })
+  const [quizCompleted, setQuizCompleted] = useState(false)
   const [reminderActive, setReminderActive] = useState(false)
-  const [secondsLeft, setSecondsLeft] = useState(2 * 60 * 60)
+  const [secondsLeft, setSecondsLeft] = useState(0)
   const [reminderDue, setReminderDue] = useState(false)
+  const [showReminderNotification, setShowReminderNotification] = useState(false)
+  const [showGoodJobPopup, setShowGoodJobPopup] = useState(false)
 
   useEffect(() => {
     const saved = localStorage.getItem('sunSafetySkinProfile')
@@ -138,7 +155,15 @@ function PreventionPage() {
       setSecondsLeft((s) => {
         if (s <= 1) {
           setReminderDue(true)
+          setShowReminderNotification(true)
           setReminderActive(false)
+          // Show browser notification if available
+          if (document.hidden && Notification.permission === 'granted') {
+            new Notification('☀️ Sunscreen Reminder', {
+              body: 'Time to reapply sunscreen!',
+              icon: '/images/notification-icon.png',
+            })
+          }
           return 0
         }
         return s - 1
@@ -151,18 +176,29 @@ function PreventionPage() {
     const minutes = SKIN_PROFILES[skinProfile]?.reminderMinutes || 120
     setSecondsLeft(minutes * 60)
     setReminderDue(false)
+    setShowReminderNotification(false)
     setReminderActive(true)
   }
 
   function markReapplied() {
-    const minutes = SKIN_PROFILES[skinProfile]?.reminderMinutes || 120
-    setSecondsLeft(minutes * 60)
-    setReminderDue(false)
-    setReminderActive(true)
+    setShowReminderNotification(false)
+    startReminder()
   }
 
   const dosageInfo = getDosageInfo(Number.isFinite(uvIndex) ? uvIndex : 0, skinProfile)
-  const suggestedProfile = recommendProfileFromQuiz(quizAnswers)
+  const quizSuggestion = recommendProfileFromQuiz(quizAnswers)
+  const suggestedProfile = quizSuggestion.profile
+  const highSunburnRisk = isHighSunburnRisk(Number.isFinite(uvIndex) ? uvIndex : 0, skinProfile)
+
+  // Auto-suggest reminder for high-risk profiles
+  useEffect(() => {
+    if (highSunburnRisk && !reminderActive && dosageInfo && !reminderDue) {
+      // Optionally auto-start reminder for very high risk
+      if (skinProfile === 'very_fair' && !reminderActive) {
+        // Could auto-start, but let user initiate manually
+      }
+    }
+  }, [highSunburnRisk, skinProfile, dosageInfo, reminderActive, reminderDue])
 
   useEffect(() => {
     if (!navigator.geolocation) {
@@ -293,7 +329,7 @@ function PreventionPage() {
     <main className="page prevention-page">
       <header className="page-header">
         <div>
-          <h2>UV Clothing Planner</h2>
+          <h2>UV Protection Planner</h2>
           <div className="secondary-row">
             <p className="muted">Location: {location.locationName}</p>
             <span className="dot-sep" aria-hidden="true">
@@ -310,166 +346,306 @@ function PreventionPage() {
         <img src="/images/prevention-hero.svg" alt="Sun-safe outfit visual" loading="lazy" />
       </section>
 
-      <section className="card">
-        <div className="section-head">
-          <p className="section-kicker">Personalization</p>
-          <h3>Set your skin profile</h3>
+      {/* ─── REMINDER NOTIFICATION POPUP ─── */}
+      {showReminderNotification && (
+        <div className="reminder-notification-overlay" role="alertdialog" aria-modal="true">
+          <div className="reminder-notification-popup">
+            <p className="notification-title">⏰ Time to Reapply Sunscreen!</p>
+            <p className="notification-message">
+              It's been {SKIN_PROFILES[skinProfile]?.reminderMinutes || 120} minutes since your last application.
+              Please reapply {dosageInfo && dosageInfo.spf} now, especially if you've been swimming, sweating,
+              or towel-drying.
+            </p>
+            <div className="notification-actions">
+              <button
+                className="reminder-btn reminder-btn-confirm"
+                type="button"
+                onClick={markReapplied}
+              >
+                ✓ I've Reapplied
+              </button>
+              <button
+                className="reminder-btn reminder-btn-secondary"
+                type="button"
+                onClick={() => setShowReminderNotification(false)}
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
         </div>
-        <label className="reminder-label" htmlFor="skin-profile-select">
-          Skin profile
-        </label>
-        <select
-          id="skin-profile-select"
-          className="skin-select"
-          value={skinProfile}
-          onChange={(event) => setSkinProfile(event.target.value)}
-        >
-          {Object.entries(SKIN_PROFILES).map(([key, profile]) => (
-            <option key={key} value={key}>
-              {profile.label}
-            </option>
-          ))}
-        </select>
-        <p className="muted">{SKIN_PROFILES[skinProfile].guidance}</p>
+      )}
 
-        <div className="skin-quiz">
-          <p className="reminder-label">Quick skin profile quiz</p>
+      {/* Good Job Popup */}
+      {showGoodJobPopup && (
+        <div className="good-job-overlay" role="alertdialog" aria-modal="true">
+          <div className="good-job-popup">
+            <p className="good-job-emoji">✨</p>
+            <p className="good-job-text">Good job!</p>
+            <p className="good-job-subtext">You're protecting your skin!</p>
+          </div>
+        </div>
+      )}
 
-          <label className="quiz-label" htmlFor="burn-response-select">
-            1) In strong sun without protection, how quickly do you burn?
-          </label>
-          <select
-            id="burn-response-select"
-            className="skin-select"
-            value={quizAnswers.burnResponse}
-            onChange={(event) =>
-              setQuizAnswers((prev) => ({ ...prev, burnResponse: event.target.value }))
-            }
-          >
-            <option value="always">Burns very quickly</option>
-            <option value="sometimes">Sometimes burns</option>
-            <option value="rarely">Rarely burns</option>
-            <option value="never">Almost never burns</option>
-          </select>
+      {/* ─── STEP 1: CURRENT UV & CLOTHING RECOMMENDATIONS ─── */}
+      <section className="card prevention-step step-current-conditions">
+        <div className="section-head">
+          <p className="section-kicker">Step 1</p>
+          <h3>Current UV Risk & Recommended Outfit</h3>
+        </div>
 
-          <label className="quiz-label" htmlFor="tan-response-select">
-            2) After sun exposure, what usually happens?
-          </label>
-          <select
-            id="tan-response-select"
-            className="skin-select"
-            value={quizAnswers.tanResponse}
-            onChange={(event) => setQuizAnswers((prev) => ({ ...prev, tanResponse: event.target.value }))}
-          >
-            <option value="never">Burns, little or no tan</option>
-            <option value="light">Mild tan after some burn</option>
-            <option value="easy">Tans easily</option>
-          </select>
+        {loading ? (
+          <p className="muted">Loading UV and clothing data...</p>
+        ) : (
+          <>
+            <div className="current-conditions-row">
+              <article className="condition-metric">
+                <p className="metric-label">UV Index</p>
+                <div className="metric-display">
+                  <span className="metric-value">{Number(uvIndex).toFixed(1)}</span>
+                  <span className="uv-level" style={{ backgroundColor: levelInfo.color }}>
+                    {levelInfo.level}
+                  </span>
+                </div>
+              </article>
 
-          <label className="quiz-label" htmlFor="freckle-response-select">
-            3) Do you have freckles on sun-exposed areas?
-          </label>
-          <select
-            id="freckle-response-select"
-            className="skin-select"
-            value={quizAnswers.freckleResponse}
-            onChange={(event) =>
-              setQuizAnswers((prev) => ({ ...prev, freckleResponse: event.target.value }))
-            }
-          >
-            <option value="many">Many</option>
-            <option value="some">Some</option>
-            <option value="none">Few or none</option>
-          </select>
+              <article className="condition-metric">
+                <p className="metric-label">Temperature</p>
+                <div className="metric-display">
+                  <span className="metric-value">{Math.round(temperatureC)}°C</span>
+                  <p className="metric-note muted">For outfit comfort</p>
+                </div>
+              </article>
 
-          <p className="muted">
-            Suggested profile: <strong>{SKIN_PROFILES[suggestedProfile].label}</strong>
-          </p>
-          {suggestedProfile !== skinProfile && (
-            <button
-              className="reminder-btn reminder-btn-start"
-              type="button"
-              onClick={() => setSkinProfile(suggestedProfile)}
-            >
-              Apply suggested profile
-            </button>
+              <article className="condition-metric">
+                <p className="metric-label">Category</p>
+                <div className="metric-display">
+                  <span className="metric-value">{category}</span>
+                  <p className="metric-note muted">Recommendation set</p>
+                </div>
+              </article>
+            </div>
+
+            <div className="recommendations-section">
+              <h4 className="subsection-title">What to Wear Today:</h4>
+              <div className="clothing-grid">
+                {recommendations && recommendations.map((rec, index) => (
+                  <article className="clothing-card" key={`${rec.clothing_item || 'item'}-${index}`}>
+                    <p className="clothing-title">{rec.clothing_item || 'Protection item'}</p>
+                    <p className="clothing-level-badge">{rec.protection_level || 'General'}</p>
+                    <p className="clothing-text">{rec.recommendation_text}</p>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+      </section>
+
+      {error && (
+        <div className="error-banner" role="status">
+          <p>{error}</p>
+        </div>
+      )}
+
+      {/* ─── STEP 2: PERSONALIZED SKIN PROFILE QUIZ ─── */}
+      <section className="card prevention-step step-skin-profile">
+        <div className="section-head">
+          <p className="section-kicker">Step 2</p>
+          <h3>Tell Us About Your Skin</h3>
+          <p className="section-subtitle">Answer these quick questions to get personalized sun protection advice</p>
+        </div>
+
+        <div className="skin-profile-section">
+          <div className="quiz-container">
+            <div className="quiz-question">
+              <label htmlFor="burn-q" className="quiz-label">
+                1. In strong sun without protection, how quickly do you burn?
+              </label>
+              <select
+                id="burn-q"
+                className="skin-select"
+                value={quizAnswers.burnResponse}
+                onChange={(event) => {
+                  setQuizAnswers((prev) => ({ ...prev, burnResponse: event.target.value }))
+                  setQuizCompleted(true)
+                }}
+              >
+                <option value="always">Burns very quickly</option>
+                <option value="sometimes">Sometimes burns</option>
+                <option value="rarely">Rarely burns</option>
+                <option value="never">Almost never burns</option>
+              </select>
+            </div>
+
+            <div className="quiz-question">
+              <label htmlFor="tan-q" className="quiz-label">
+                2. After sun exposure, what usually happens?
+              </label>
+              <select
+                id="tan-q"
+                className="skin-select"
+                value={quizAnswers.tanResponse}
+                onChange={(event) => {
+                  setQuizAnswers((prev) => ({ ...prev, tanResponse: event.target.value }))
+                  setQuizCompleted(true)
+                }}
+              >
+                <option value="never">Burns, little or no tan</option>
+                <option value="light">Mild tan after some burn</option>
+                <option value="easy">Tans easily</option>
+              </select>
+            </div>
+
+            <div className="quiz-question">
+              <label htmlFor="freckle-q" className="quiz-label">
+                3. Do you have freckles on sun-exposed areas?
+              </label>
+              <select
+                id="freckle-q"
+                className="skin-select"
+                value={quizAnswers.freckleResponse}
+                onChange={(event) => {
+                  setQuizAnswers((prev) => ({ ...prev, freckleResponse: event.target.value }))
+                  setQuizCompleted(true)
+                }}
+              >
+                <option value="many">Many</option>
+                <option value="some">Some</option>
+                <option value="none">Few or none</option>
+              </select>
+            </div>
+          </div>
+
+          {quizCompleted && (
+            <div className="quiz-suggestion-box">
+              <p className="suggestion-label">Your Suggested Skin Type:</p>
+              <p className="suggestion-profile">
+                <strong>{SKIN_PROFILES[suggestedProfile].label}</strong> (Risk Score: {quizSuggestion.riskScore}/100)
+              </p>
+              {suggestedProfile !== skinProfile ? (
+                <button
+                  className="reminder-btn reminder-btn-apply"
+                  type="button"
+                  onClick={() => setSkinProfile(suggestedProfile)}
+                >
+                  Apply This Profile
+                </button>
+              ) : (
+                <p className="profile-applied-badge">
+                  ✓ Profile Applied
+                </p>
+              )}
+            </div>
           )}
         </div>
       </section>
 
-      {error ? <p className="error">{error}</p> : null}
-
-      <section className="card prevention-overview" aria-live="polite">
+      {/* ─── STEP 3: PERSONALIZED SUN PROTECTION ADVICE ─── */}
+      <section className="card prevention-step step-sun-protection-advice">
         <div className="section-head">
-          <p className="section-kicker">Story 3.3</p>
-          <h3>Choose what to wear based on UV risk</h3>
+          <p className="section-kicker">Step 3</p>
+          <h3>Your Personal Sun Protection Plan</h3>
         </div>
 
-        <div className="prevention-metrics">
-          <article className="metric-pill">
-            <p className="tile-label">Current UV</p>
-            <p className="tile-value">{loading ? 'Loading...' : Number(uvIndex).toFixed(1)}</p>
-            <span className="uv-level" style={{ backgroundColor: levelInfo.color }}>
-              {levelInfo.level}
-            </span>
-          </article>
+        {quizCompleted ? (
+          suggestedProfile === skinProfile ? (
+            <div className="protection-advice-container">
+              {/* Sun illustration */}
+              <svg className="step-decoration sun-icon" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                {/* Sun rays */}
+                <g stroke="#FFB300" strokeWidth="4" strokeLinecap="round">
+                  <line x1="60" y1="10" x2="60" y2="25" />
+                  <line x1="60" y1="95" x2="60" y2="110" />
+                  <line x1="10" y1="60" x2="25" y2="60" />
+                  <line x1="95" y1="60" x2="110" y2="60" />
+                  <line x1="22" y1="22" x2="33" y2="33" />
+                  <line x1="87" y1="87" x2="98" y2="98" />
+                  <line x1="98" y1="22" x2="87" y2="33" />
+                  <line x1="33" y1="87" x2="22" y2="98" />
+                </g>
+                {/* Sun circle */}
+                <circle cx="60" cy="60" r="38" fill="#FFC107" opacity="0.9" />
+                <circle cx="60" cy="60" r="38" fill="none" stroke="#FFB300" strokeWidth="2" opacity="0.5" />
+                {/* Sun gradient effect */}
+                <circle cx="55" cy="55" r="28" fill="#FFD54F" opacity="0.6" />
+              </svg>
 
-          <article className="metric-pill">
-            <p className="tile-label">Temperature</p>
-            <p className="tile-value">{loading ? 'Loading...' : `${Math.round(temperatureC)} deg C`}</p>
-            <p className="muted">Used to adjust outfit comfort.</p>
-          </article>
+              <div className={`advice-card advice-${SKIN_PROFILES[skinProfile].sunburnRiskLevel}`}>
+                <p className="advice-text">{SKIN_PROFILES[skinProfile].sunburnAdvice}</p>
+              </div>
 
-          <article className="metric-pill">
-            <p className="tile-label">Recommendation Set</p>
-            <p className="tile-value">{category}</p>
-            <p className="muted">Skin-aware sunscreen timing is applied.</p>
-          </article>
-        </div>
-      </section>
+              <div className="selected-profile-details">
+                <p className="profile-name">{SKIN_PROFILES[skinProfile].label}</p>
+                <p className="profile-guidance">{SKIN_PROFILES[skinProfile].guidance}</p>
+                <p className="reminder-interval">
+                  Recommended reapplication interval: <strong>{SKIN_PROFILES[skinProfile].reminderMinutes} minutes</strong>
+                </p>
+              </div>
 
-      <section className="card">
-        <div className="section-head">
-          <h3>Recommended clothing and accessories</h3>
-        </div>
-
-        {loading ? (
-          <p className="muted">Loading UV-based clothing guidance...</p>
+              {/* HIGH SUNBURN RISK ALERT */}
+              {highSunburnRisk && (
+                <div className="high-risk-alert-banner">
+                  <p className="alert-icon">🚨</p>
+                  <div className="alert-content">
+                    <p className="alert-title">High Sunburn Risk Detected</p>
+                    <p className="alert-message">
+                      Your skin type combined with current UV levels puts you at increased risk. Apply sunscreen
+                      immediately and use the reminder timer below to stay on top of reapplication.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <p className="muted">Apply the suggested profile above to see your personalized sun protection advice.</p>
+          )
         ) : (
-          <div className="clothing-grid">
-            {recommendations.map((rec, index) => (
-              <article className="clothing-item" key={`${rec.clothing_item || 'item'}-${index}`}>
-                <p className="clothing-title">{rec.clothing_item || 'Protection item'}</p>
-                <p className="clothing-level">Protection: {rec.protection_level || 'General'}</p>
-                <p className="clothing-text">{rec.recommendation_text}</p>
-              </article>
-            ))}
-          </div>
+          <p className="muted">Complete the quiz above to see your personalized sun protection advice.</p>
         )}
       </section>
 
-      {/* ── US3.1: Sunscreen Dosage Calculator ── */}
-      <section className="card">
-        <div className="section-head">
-          <p className="section-kicker">Story 3.1</p>
-          <h3>Sunscreen Dosage Calculator</h3>
-        </div>
+      {/* ─── STEP 4: SUNSCREEN DOSAGE CALCULATOR ─── */}
+      {dosageInfo && (
+        <section className="card prevention-step step-dosage">
+          <div className="section-head">
+            <p className="section-kicker">Dosage</p>
+            <h3>Sunscreen Application Guide</h3>
+          </div>
 
-        {loading ? (
-          <p className="muted">Loading dosage recommendation...</p>
-        ) : dosageInfo === null ? (
-          <p className="muted">
-            UV is currently below 3 — sunscreen is not required unless you have very sensitive skin
-            or plan extended outdoor time.
-          </p>
-        ) : (
-          <>
-            <p className="dosage-summary">
+          {/* Sunscreen bottle illustration */}
+          <svg className="step-decoration sunscreen-bottle" viewBox="0 0 100 160" xmlns="http://www.w3.org/2000/svg">
+            {/* Pump top */}
+            <rect x="32" y="8" width="36" height="12" rx="3" fill="#E8E8E8" stroke="#999" strokeWidth="1.5" />
+            <rect x="40" y="4" width="20" height="8" rx="2" fill="#D0D0D0" stroke="#999" strokeWidth="1" />
+            {/* Pump nozzle */}
+            <circle cx="50" cy="3" r="3" fill="#A0A0A0" />
+            
+            {/* Main bottle body */}
+            <path d="M 30 20 L 25 40 Q 20 80 25 120 Q 28 145 50 150 Q 72 145 75 120 Q 80 80 75 40 L 70 20 Z" 
+                  fill="#FFE082" stroke="#FBC02D" strokeWidth="2" opacity="0.95" />
+            
+            {/* Bottle shine effect */}
+            <ellipse cx="40" cy="60" rx="8" ry="30" fill="#FFFFFF" opacity="0.4" />
+            
+            {/* SPF label background */}
+            <rect x="28" y="70" width="44" height="30" rx="4" fill="#FFFFFF" opacity="0.8" stroke="#FBC02D" strokeWidth="1" />
+            
+            {/* SPF text */}
+            <text x="50" y="82" fontSize="14" fontWeight="bold" fill="#FF6F00" textAnchor="middle">SPF</text>
+            <text x="50" y="96" fontSize="12" fontWeight="bold" fill="#FF6F00" textAnchor="middle">50+</text>
+          </svg>
+
+          <div className="dosage-summary-card">
+            <p className="dosage-main">
               Use <strong>{dosageInfo.spf}</strong> — approximately{' '}
-              <strong>{dosageInfo.totalTsp} tsp ({dosageInfo.totalMl}ml)</strong> for full body
-              coverage.
+              <strong>{dosageInfo.totalTsp} teaspoons ({dosageInfo.totalMl}ml)</strong> for full body coverage.
             </p>
-            <p className="muted">{dosageInfo.profileGuidance}</p>
+            <p className="dosage-note muted">{dosageInfo.note}</p>
+          </div>
+
+          <div className="dosage-breakdown">
+            <h4 className="subsection-title">Application by Body Part:</h4>
             <div className="dosage-grid">
               {BODY_PARTS.map((part) => (
                 <div key={part} className="dosage-part">
@@ -478,51 +654,79 @@ function PreventionPage() {
                 </div>
               ))}
             </div>
-            <p className="dosage-note muted">{dosageInfo.note}</p>
-          </>
-        )}
-      </section>
+          </div>
+        </section>
+      )}
 
-      {/* ── US3.2: Sunscreen Reminder Tracker ── */}
-      <section className="card reminder-card">
+      {/* ─── STEP 5: SUNSCREEN REMINDER & TIMER ─── */}
+      <section className="card prevention-step step-reminder reminder-card">
         <div className="section-head">
-          <p className="section-kicker">Story 3.2</p>
-          <h3>Sunscreen Reminder</h3>
+          <p className="section-kicker">Reminder</p>
+          <h3>Sunscreen Reapplication Timer</h3>
         </div>
 
         {reminderDue ? (
-          <div className="reminder-due">
-            <p className="reminder-due-title">⏰ Time to reapply sunscreen!</p>
-            <p className="muted">
-              Reapply {dosageInfo ? dosageInfo.spf : 'SPF30+'} now, especially if you have been
-              swimming, sweating, or towel-drying.
+          <div className="reminder-state reminder-due">
+            <p className="reminder-state-title">⏰ Reapplication Due Now!</p>
+            <p className="reminder-state-message">
+              It's time to reapply {dosageInfo ? dosageInfo.spf : 'SPF30+'}, especially if you've been swimming,
+              sweating, or towel-drying your skin.
             </p>
             <button className="reminder-btn reminder-btn-confirm" type="button" onClick={markReapplied}>
-              ✓ I've reapplied — start next {SKIN_PROFILES[skinProfile].reminderMinutes}-min timer
+              ✓ I've Reapplied — Start Next Timer
             </button>
           </div>
         ) : reminderActive ? (
-          <div className="reminder-active">
-            <p className="reminder-label">Next reapplication in</p>
+          <div className="reminder-state reminder-active">
+            <p className="reminder-state-label">Next Reapplication In:</p>
             <p className="reminder-countdown" aria-live="polite">
               {formatCountdown(secondsLeft)}
             </p>
-            <button
-              className="reminder-btn reminder-btn-stop"
-              type="button"
-              onClick={() => setReminderActive(false)}
+            <p className="reminder-profile-note">
+              Profile interval: {SKIN_PROFILES[skinProfile].reminderMinutes} minutes
+            </p>
+
+            {/* Timer Decoration SVG */}
+            <svg className="timer-decoration" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+              {/* Clock circle */}
+              <circle cx="60" cy="60" r="50" fill="#E3F2FD" stroke="#1976D2" strokeWidth="2.5" />
+              {/* Clock tick marks */}
+              <g stroke="#1976D2" strokeWidth="1.5">
+                <line x1="60" y1="12" x2="60" y2="20" />
+                <line x1="60" y1="100" x2="60" y2="108" />
+                <line x1="12" y1="60" x2="20" y2="60" />
+                <line x1="100" y1="60" x2="108" y2="60" />
+              </g>
+              {/* Center dot */}
+              <circle cx="60" cy="60" r="3.5" fill="#1976D2" />
+              {/* Hour hand */}
+              <line x1="60" y1="60" x2="60" y2="35" stroke="#1976D2" strokeWidth="3" strokeLinecap="round" />
+              {/* Minute hand */}
+              <line x1="60" y1="60" x2="80" y2="60" stroke="#42A5F5" strokeWidth="2.5" strokeLinecap="round" />
+              {/* Second hand (animated) */}
+              <line x1="60" y1="60" x2="60" y2="25" stroke="#FF6B6B" strokeWidth="1.5" strokeLinecap="round" opacity="0.7" />
+            </svg>
+
+            <button 
+              className="reminder-btn reminder-btn-stop" 
+              type="button" 
+              onClick={() => {
+                setReminderActive(false)
+                setShowGoodJobPopup(true)
+                setTimeout(() => setShowGoodJobPopup(false), 2000)
+              }}
             >
-              Stop reminder
+              ✓ I've Applied Sunscreen
             </button>
           </div>
         ) : (
-          <div className="reminder-idle">
-            <p className="muted">
-              Track your sunscreen reapplication. Current profile reminder interval:{' '}
-              <strong>{SKIN_PROFILES[skinProfile].reminderMinutes} minutes</strong>.
+          <div className="reminder-state reminder-idle">
+            <p className="reminder-idle-text">
+              Keep track of your sunscreen reapplication with this timer. Your current profile recommends
+              reapplication every <strong>{SKIN_PROFILES[skinProfile].reminderMinutes} minutes</strong>.
             </p>
             <button className="reminder-btn reminder-btn-start" type="button" onClick={startReminder}>
-              ▶ Start sunscreen reminder
+              ▶ Start Sunscreen Timer
             </button>
           </div>
         )}
