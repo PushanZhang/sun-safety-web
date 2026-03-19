@@ -34,7 +34,7 @@ const SKIN_PROFILES = {
     reminderMinutes: 120,
     guidance: 'UV still causes long-term damage. Keep sunscreen and protective clothing routine.',
     sunburnRiskLevel: 'low',
-    sunburnAdvice: '℃ LOW RISK: While you rarely burn, UV damage still accumulates. Use SPF30+ regularly as part of your routine.',
+    sunburnAdvice: '✓ LOW RISK: While you rarely burn, UV damage still accumulates. Use SPF30+ regularly as part of your routine.',
   },
   brown_black: {
     label: 'Brown / dark skin tone',
@@ -42,7 +42,7 @@ const SKIN_PROFILES = {
     reminderMinutes: 120,
     guidance: 'Melanin adds some protection, but UV damage still accumulates over time.',
     sunburnRiskLevel: 'low',
-    sunburnAdvice: '℃ LOW RISK: Melanin provides natural protection, but cumulative UV damage is still a concern. Use SPF30+ regularly.',
+    sunburnAdvice: '✓ LOW RISK: Melanin provides natural protection, but cumulative UV damage is still a concern. Use SPF30+ regularly.',
   },
 }
 
