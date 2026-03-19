@@ -131,7 +131,7 @@ function PreventionPage() {
     tanResponse: 'easy',
     freckleResponse: 'none',
   })
-  const [quizCompleted, setQuizCompleted] = useState(false)
+  const [quizCompleted, setQuizCompleted] = useState(true)
   const [reminderActive, setReminderActive] = useState(false)
   const [secondsLeft, setSecondsLeft] = useState(0)
   const [reminderDue, setReminderDue] = useState(false)
