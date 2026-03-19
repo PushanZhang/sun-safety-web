@@ -353,7 +353,7 @@ function PreventionPage() {
             <p className="notification-title">⏰ Time to Reapply Sunscreen!</p>
             <p className="notification-message">
               It's been {SKIN_PROFILES[skinProfile]?.reminderMinutes || 120} minutes since your last application.
-              Please reapply {dosageInfo && dosageInfo.spf} now, especially if you've been swimming, sweating,
+              Please reapply {dosageInfo ? dosageInfo.spf : 'SPF30+'} now, especially if you've been swimming, sweating,
               or towel-drying.
             </p>
             <div className="notification-actions">
